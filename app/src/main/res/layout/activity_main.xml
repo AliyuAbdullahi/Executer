@@ -1,0 +1,63 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@color/nativeGreen"
+  android:orientation="vertical"
+  tools:context=".MainActivity">
+
+  <ImageView
+    android:id="@+id/executeruber"
+    android:layout_width="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:src="@drawable/executr"
+    android:layout_height="wrap_content"
+    android:layout_alignParentTop="true"
+    android:layout_centerHorizontal="true"
+    android:layout_marginTop="55dp"/>
+
+  <TextView
+    android:textSize="32sp"
+    android:textStyle="bold"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceLarge"
+    android:text="EXECUTER"
+    android:id="@+id/executer"
+    android:layout_below="@id/executeruber"
+    android:layout_centerHorizontal="true"/>
+
+  <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceMedium"
+    android:text="POWERED BY UBER"
+    android:id="@+id/textView2"
+    android:layout_below="@+id/executer"
+    android:layout_alignLeft="@+id/executer"
+    android:layout_alignStart="@+id/executer"/>
+
+  <TextView
+    android:id="@+id/sync_calendar"
+    android:layout_width="wrap_content"
+    android:textSize="20sp"
+    android:layout_gravity="center_horizontal"
+    android:gravity="center"
+    android:text="Authenticate with Goolge to get your Calendar"
+    android:layout_height="wrap_content"
+    android:layout_above="@+id/google_plus_button"
+    android:layout_centerHorizontal="true"
+    android:layout_marginBottom="50dp"/>
+
+  <ImageButton
+    android:layout_width="wrap_content"
+    android:src="@drawable/sync"
+    android:background="@null"
+    android:onClick="authDialog"
+    android:layout_gravity="center_horizontal"
+    android:id="@+id/google_plus_button"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:layout_centerHorizontal="true"
+    android:layout_marginBottom="103dp"/>
+</RelativeLayout>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="taxies">
+        <item>UBER X</item>
+        <item>UBER BLACK</item>
+        <item>UBER SUN</item>
+    </string-array>
+</resources>

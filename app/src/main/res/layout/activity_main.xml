@@ -17,37 +17,42 @@
     android:layout_marginTop="55dp"/>
 
   <TextView
-    android:textSize="32sp"
+    android:gravity="center_horizontal"
+    android:textSize="73.3sp"
     android:textStyle="bold"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:textAppearance="?android:attr/textAppearanceLarge"
     android:text="EXECUTER"
-    android:id="@+id/executer"
+    android:id="@+id/executer_text_one"
     android:layout_below="@id/executeruber"
     android:layout_centerHorizontal="true"/>
 
   <TextView
-    android:layout_width="wrap_content"
+    android:textStyle="bold"
+    android:letterSpacing="0.3"
+    android:gravity="center_horizontal"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:textAppearance="?android:attr/textAppearanceMedium"
     android:text="POWERED BY UBER"
-    android:id="@+id/textView2"
-    android:layout_below="@+id/executer"
-    android:layout_alignLeft="@+id/executer"
-    android:layout_alignStart="@+id/executer"/>
+    android:id="@+id/powered_uber_text"
+    android:layout_below="@+id/executer_text_one"
+    android:layout_alignLeft="@+id/executer_text_one"
+    android:layout_alignStart="@+id/executer_text_one"/>
 
   <TextView
     android:id="@+id/sync_calendar"
-    android:layout_width="wrap_content"
-    android:textSize="20sp"
+    android:layout_width="match_parent"
+    android:textSize="16sp"
     android:layout_gravity="center_horizontal"
-    android:gravity="center"
+    android:gravity="center_horizontal"
     android:text="Authenticate with Goolge to get your Calendar"
     android:layout_height="wrap_content"
     android:layout_above="@+id/google_plus_button"
-    android:layout_centerHorizontal="true"
-    android:layout_marginBottom="50dp"/>
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentStart="true"
+    android:layout_marginBottom="24dp"/>
 
   <ImageButton
     android:layout_width="wrap_content"

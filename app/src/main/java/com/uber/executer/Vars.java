@@ -5,6 +5,7 @@ package com.uber.executer;
  */
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.content.Context;
@@ -214,7 +215,7 @@ public class Vars {
 
             @Override
             public void run() {
-                Builder dg = new Builder(activity);
+                Builder dg = new AlertDialog.Builder(activity);
                 dg.setIcon(R.mipmap.ic_launcher).setTitle(title != null ? title : activity.getString(R.string.app_name))
                         .setMessage(msg).setCancelable(true).setPositiveButton("Retry", positiveClick)
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -482,7 +483,7 @@ public class Vars {
                 @Override
                 public void run() {
                     try {
-                        final Object[] result = HttpRequest(apiRoute, keys, values, HttpMethods.values ()[method - 1], activity);
+                        final Object[] result = HttpRequest(apiRoute, keys, values, HttpMethods.values()[method - 1], activity);
                         if ((Boolean) result[1]) {
                             //Vars.isCenterLoading(activity, view, false, viewId);
                             done(result[0].toString());

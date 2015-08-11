@@ -2,6 +2,7 @@ package com.uber.executer;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -25,9 +26,9 @@ import java.util.List;
  * Created by aliyuolalekan on 8/10/15.
  */
 public class EventPageFragment extends Fragment {
+  String summary;
   List<String> list;
   String[] taxiTypes;
-
   ListView eventList;
   protected LocationManager locationManager;
   private Location location;
@@ -35,18 +36,30 @@ public class EventPageFragment extends Fragment {
   Double latitude;
   @Nullable
   @Override
-  public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+  public View onCreateView (final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     super.onCreateView (inflater, container, savedInstanceState);
     View view = inflater.inflate (R.layout.events, container, false);
     eventList = (ListView)view. findViewById(R.id.events);
     eventList.setAdapter (new EventAdapter (getActivity (), Vars.calendars));
+    eventList.setOnItemClickListener (new AdapterView.OnItemClickListener () {
+      @Override
+      public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
+
+        Calendar calendar = (Calendar)parent.getItemAtPosition (position);
+        Intent intent = new Intent (getActivity (), BookRide.class);
+        intent.putExtra ("summary", calendar.getSummary ());
+        intent.putExtra ("location",calendar.getLocation ());
+        intent.putExtra ("startTime", calendar.getStart ());
+        startActivity (intent);
+      }
+    });
     return view;
   }
 
   public class EventAdapter extends BaseAdapter {
     private Context context;
 
-    private Calendar[] calendars;
+    public Calendar[] calendars;
 
     public EventAdapter(Context context, Calendar[] calendars) {
       this.context = context;
@@ -72,6 +85,7 @@ public class EventPageFragment extends Fragment {
     public View getView(int position, View convertView, ViewGroup parent) {
       View row = null;
       Calendar calendar = calendars[position];
+      summary = calendar.summary;
       if (convertView == null) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
         row = inflater.inflate(R.layout.event_page_adapter, parent, false);

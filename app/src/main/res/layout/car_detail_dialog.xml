@@ -1,7 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+  <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="16dp"
+    android:background="#ccc"
+    android:layout_marginBottom="12dp"
+    android:layout_marginTop="12dp"
+    android:layout_marginLeft="12dp"
+    android:layout_marginRight="12dp"
+    android:layout_alignParentTop="true"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="vertical">
 
-</LinearLayout>
+    <ImageView
+      android:layout_marginTop="20dp"
+      android:id="@+id/uber_black_detail_car"
+      android:src="@drawable/uber_black"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"/>
+
+    <TextView
+      android:padding="16dp"
+      android:textStyle="bold"
+      android:textSize="22sp"
+      android:id="@+id/car_title"
+      android:text="UBER BLACK"
+      android:textColor="@color/nativeGreen"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"/>
+
+    <TextView
+      android:id="@+id/car_property"
+      android:text="code of normally zoom in and zoom out animation
+      between two activities, but I want something different. I have five
+      buttons on my first activity if I click on first button then zoom
+      in would be starts from position of first button only instead of
+      zooming from centre. Please help me."
+      android:padding="16dp"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"/>
+
+    <Button
+      android:id="@+id/gotit"
+      android:layout_marginTop="10dp"
+      android:text="Got it"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+  </android.support.v7.widget.CardView>

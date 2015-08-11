@@ -15,4 +15,6 @@
   <string name="taxi_type">Taxi type</string>
   <string name="pickup_location">Pickup Location</string>
   <string name="title_activity_login">LoginActivity</string>
+  <string name="title_activity_book_ride">BookRide</string>
+  <string name="uber_black_details">The best car you can think of</string>
 </resources>

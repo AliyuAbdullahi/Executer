@@ -20,4 +20,25 @@ public class Calendar {
 
     @SerializedName("summary")
     public String summary;
+
+    public String getStart () {
+
+        return start;
+    }
+
+    public String getEnd () {
+        return end;
+    }
+
+    public String getLocation () {
+        return location;
+    }
+
+    public String getStatus () {
+        return status;
+    }
+
+    public String getSummary () {
+        return summary;
+    }
 }

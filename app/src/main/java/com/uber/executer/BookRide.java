@@ -20,9 +20,30 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.uber.executer.models.Calendar;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 public class BookRide extends AppCompatActivity {
+
   Dialog dialog;
   static final String UBER_BLACK = "UBER BLACK";
   static final String UBER_X = "UBER X";
@@ -45,6 +66,7 @@ public class BookRide extends AppCompatActivity {
     //set up layout
     setContentView (R.layout.activity_book_ride);
 
+
     //set up toolbar
     toolbar = (Toolbar)findViewById (R.id.toolbar);
     setSupportActionBar (toolbar);
@@ -53,6 +75,7 @@ public class BookRide extends AppCompatActivity {
     toolbarTitle.setText ("EXECUTER");
     Typeface tf = Typeface.createFromAsset (getAssets (),"MuseoSans-300.otf");
     toolbarTitle.setTypeface (tf);
+
 
     //get data from EventPageFragment and populate the view
     Intent gotten = getIntent ();
@@ -66,6 +89,7 @@ public class BookRide extends AppCompatActivity {
     eventLocation.setText (location);
     eventStarts.setText (time);
 
+
     //make cars layout invisible
     cars = (LinearLayout)findViewById (R.id.cars);
     cars.setVisibility (View.INVISIBLE);
@@ -77,10 +101,63 @@ public class BookRide extends AppCompatActivity {
     chooseAride = (Button)tableLayout.findViewById (R.id.choose_a_ride);
     carType = (TextView)tableLayout.findViewById (R.id.uber_type_here);
 
+
+    // book a ride
+    bookARide = (Button)findViewById (R.id.book_a_ride);
+    bookARide.setOnClickListener (new View.OnClickListener () {
+      @Override
+      public void onClick (View v) {
+        //get the car type
+        String car = carType.getText ().toString ();
+        // get the current time of request
+        long time = new Date ().getTime ();
+        DateFormat formatter = new SimpleDateFormat ("HH:mm:ss:SSS");
+        String formattedTime = formatter.format (time);
+        //get user location
+        //get user destination
+        //get user longitude
+        //get user latitude
+        RequestQueue queue = Volley.newRequestQueue (getApplicationContext ());
+        StringRequest stringRequest = new StringRequest (Request.Method.POST, "http://andelahack.herokuapp.com/users/35c2856e-068b-43ba-94d3-3840af926b36/requests", new Response.Listener<String> () {
+          @Override
+          public void onResponse (String response) {
+            Toast.makeText (getApplicationContext (), response.toString (),Toast.LENGTH_LONG).show ();
+
+          }
+        }, new Response.ErrorListener () {
+          @Override
+          public void onErrorResponse (VolleyError error) {
+            Toast.makeText (getApplicationContext (), "Error: " +error,Toast.LENGTH_LONG).show ();
+          }
+        }){
+          @Override
+          protected Map<String, String> getParams () throws AuthFailureError {
+            super.getParams ();
+            Map<String,String> params = new HashMap<String, String> ();
+            params.put("taxi type", "UBER BLACK");
+            params.put("location", "location");
+            return params;
+
+          }
+
+          @Override
+          public Map<String, String> getHeaders () throws AuthFailureError {
+            super.getHeaders ();
+            Map<String,String> params = new HashMap<String, String>();
+            params.put("Content-Type","application/x-www-form-urlencoded");
+            return params;
+          }
+        };
+        queue.add (stringRequest);
+      }
+    });
+
+
     //setup taxies
     uberBlack = (ImageView)findViewById (R.id.uber_black_one);
     uberx = (ImageView)findViewById (R.id.uber_x);
     ubertaxi = (ImageView)findViewById (R.id.uber_taxi);
+
 
     //setup listeners for taxies
     uberBlack.setOnClickListener (new View.OnClickListener () {
@@ -92,6 +169,8 @@ public class BookRide extends AppCompatActivity {
 
       }
     });
+
+
     uberBlack.setOnLongClickListener (new View.OnLongClickListener () {
       @Override
       public boolean onLongClick (View v) {
@@ -116,6 +195,8 @@ public class BookRide extends AppCompatActivity {
         return true;
       }
     });
+
+
     uberx.setOnClickListener (new View.OnClickListener () {
       @Override
       public void onClick (View v) {
@@ -124,6 +205,8 @@ public class BookRide extends AppCompatActivity {
         toastMessage ("Long Click UBER X to see UBER X details");
       }
     });
+
+
     uberx.setOnLongClickListener (new View.OnLongClickListener () {
       @Override
       public boolean onLongClick (View v) {
@@ -148,6 +231,8 @@ public class BookRide extends AppCompatActivity {
         return true;
       }
     });
+
+
     ubertaxi.setOnClickListener (new View.OnClickListener () {
       @Override
       public void onClick (View v) {
@@ -156,6 +241,8 @@ public class BookRide extends AppCompatActivity {
         toastMessage ("Long Click UBER TAXI to see UBER TAXI details");
       }
     });
+
+
     ubertaxi.setOnLongClickListener (new View.OnLongClickListener () {
       @Override
       public boolean onLongClick (View v) {
@@ -180,6 +267,8 @@ public class BookRide extends AppCompatActivity {
         return true;
       }
     });
+
+
     chooseAride.setOnClickListener (new View.OnClickListener () {
       @Override
       public void onClick (View v) {
@@ -191,6 +280,7 @@ public class BookRide extends AppCompatActivity {
     });
   }
 
+
   @Override
   public boolean onCreateOptionsMenu (Menu menu) {
     // Inflate the menu; this adds items to the action bar if it is present.
@@ -200,6 +290,7 @@ public class BookRide extends AppCompatActivity {
   public Calendar getCalendarAtPosion(Calendar[] calendars, int position){
     return calendars[position];
   }
+
 
   @Override
   public boolean onOptionsItemSelected (MenuItem item) {
@@ -215,6 +306,7 @@ public class BookRide extends AppCompatActivity {
 
     return super.onOptionsItemSelected (item);
   }
+
   public void choose(String type){
     row.setVisibility (View.VISIBLE);
     carType.setText (type);
@@ -227,6 +319,5 @@ public class BookRide extends AppCompatActivity {
   private void toastMessage(String message){
     Toast.makeText (this, message, Toast.LENGTH_SHORT).show ();
   }
-
 
 }

@@ -160,6 +160,7 @@
     </RelativeLayout>
   </LinearLayout>
   <Button
+    android:id="@+id/book_a_ride"
     android:textStyle="bold"
     android:textSize="24dp"
     android:textAlignment="center"

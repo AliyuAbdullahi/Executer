@@ -32,6 +32,10 @@
             android:name=".BookRide"
             android:label="@string/title_activity_book_ride" >
         </activity>
+        <activity
+            android:name=".BookedEvents"
+            android:label="@string/title_activity_booked_events" >
+        </activity>
     </application>
 
 </manifest>

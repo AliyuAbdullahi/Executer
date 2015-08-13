@@ -3,6 +3,7 @@ package com.uber.executer;
 import android.app.ActionBar;
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,9 +11,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
@@ -37,18 +40,25 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 public class BookRide extends AppCompatActivity {
-
+  TextView clickImage;
+  TextView startTime;
+  TextView showBookedEvents;
+  EditText pickUpLocation;
+  JSONObject locationObject;
+  String pickup;
   Dialog dialog;
   static final String UBER_BLACK = "UBER BLACK";
   static final String UBER_X = "UBER X";
   static final String UBER_TAXI = "UBER TAXI";
   LinearLayout cars;
+  EditText destination;
   Toolbar toolbar;
   Button bookARide;
   TableLayout tableLayout;
@@ -65,7 +75,8 @@ public class BookRide extends AppCompatActivity {
 
     //set up layout
     setContentView (R.layout.activity_book_ride);
-
+    //prevent editText from gaining focus on lunch of activity
+//    getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
     //set up toolbar
     toolbar = (Toolbar)findViewById (R.id.toolbar);
@@ -79,15 +90,13 @@ public class BookRide extends AppCompatActivity {
 
     //get data from EventPageFragment and populate the view
     Intent gotten = getIntent ();
-    String location = gotten.getStringExtra ("location");
+    final String location = gotten.getStringExtra ("location");
     String summary = gotten.getStringExtra ("summary");
-    String time = gotten.getStringExtra ("startTime");
+    String timing = gotten.getStringExtra ("startTime");
     TextView eventsummary = (TextView)findViewById (R.id.event_title_text);
     TextView eventLocation = (TextView)findViewById (R.id.event_location);
-    TextView eventStarts = (TextView)findViewById (R.id.event_start);
     eventsummary.setText (summary);
     eventLocation.setText (location);
-    eventStarts.setText (time);
 
 
     //make cars layout invisible
@@ -97,22 +106,54 @@ public class BookRide extends AppCompatActivity {
     //get instance of the tablelayout
     tableLayout = (TableLayout)findViewById (R.id.table);
     row = (TableRow)tableLayout.findViewById (R.id.uber_types);
+    pickUpLocation = (EditText)tableLayout.findViewById (R.id.pick_up);
+    //set click image notification text invisible
+    clickImage = (TextView)findViewById (R.id.click_to_select);
+    clickImage.setVisibility (View.INVISIBLE);
+    //get event start time
+    startTime = (TextView)tableLayout.findViewById (R.id.event_start_time);
+
+
+    startTime.setText (timing);
+
+    showBookedEvents = (TextView)findViewById (R.id.booked_events);
+    showBookedEvents.setOnClickListener (new View.OnClickListener () {
+      @Override
+      public void onClick (View v) {
+        showBookedEvents.setBackgroundColor (Color.argb (60,193,193,193));
+      }
+    });
     row.setVisibility (View.INVISIBLE);
     chooseAride = (Button)tableLayout.findViewById (R.id.choose_a_ride);
     carType = (TextView)tableLayout.findViewById (R.id.uber_type_here);
-
-
+    destination = (EditText)tableLayout.findViewById (R.id.event_location);
+    destination.setText (location);
     // book a ride
     bookARide = (Button)findViewById (R.id.book_a_ride);
+    bookARide.setVisibility(View.INVISIBLE);
     bookARide.setOnClickListener (new View.OnClickListener () {
       @Override
       public void onClick (View v) {
+        try{
+          locationObject = new JSONObject ();
+          locationObject.put ("longitude","longitude");
+          locationObject.put("latitude","latitude");
+          locationObject.put("address","address");
+        }
+        catch(JSONException e){
+          e.printStackTrace ();
+        }
+        //get pickup location text in string format
+        pickup = pickUpLocation.getText ().toString ();
+
+        final String myDestination = destination.getText ().toString ();
         //get the car type
-        String car = carType.getText ().toString ();
+        final String car = carType.getText ().toString ();
         // get the current time of request
         long time = new Date ().getTime ();
         DateFormat formatter = new SimpleDateFormat ("HH:mm:ss:SSS");
         String formattedTime = formatter.format (time);
+
         //get user location
         //get user destination
         //get user longitude
@@ -134,8 +175,11 @@ public class BookRide extends AppCompatActivity {
           protected Map<String, String> getParams () throws AuthFailureError {
             super.getParams ();
             Map<String,String> params = new HashMap<String, String> ();
-            params.put("taxi type", "UBER BLACK");
-            params.put("location", "location");
+            params.put("uberType",car);
+            params.put("location", locationObject.toString ());
+            params.put ("destination", myDestination);
+            params.put("pickUpLocation", pickup);
+
             return params;
 
           }
@@ -149,6 +193,7 @@ public class BookRide extends AppCompatActivity {
           }
         };
         queue.add (stringRequest);
+        pickUpLocation.setText ("");
       }
     });
 
@@ -165,7 +210,7 @@ public class BookRide extends AppCompatActivity {
       public void onClick (View v) {
         choose(UBER_BLACK);
         zoomIn (v);
-        toastMessage ("Long Click UBER BLACK to see UBER BLACK details");
+
 
       }
     });
@@ -202,7 +247,7 @@ public class BookRide extends AppCompatActivity {
       public void onClick (View v) {
         choose (UBER_X);
         zoomIn (v);
-        toastMessage ("Long Click UBER X to see UBER X details");
+
       }
     });
 
@@ -219,7 +264,7 @@ public class BookRide extends AppCompatActivity {
         TextView carTitle = (TextView) dialog.findViewById (R.id.car_title);
         carTitle.setText ("UBER X");
         TextView carProperty = (TextView) dialog.findViewById (R.id.car_property);
-        carProperty.setText (R.string.uber_black_details);
+        carProperty.setText (R.string.uber_x_details);
         Button gotIt = (Button) dialog.findViewById (R.id.gotit);
         gotIt.setOnClickListener (new View.OnClickListener () {
           @Override
@@ -238,7 +283,6 @@ public class BookRide extends AppCompatActivity {
       public void onClick (View v) {
         choose (UBER_TAXI);
         zoomIn (v);
-        toastMessage ("Long Click UBER TAXI to see UBER TAXI details");
       }
     });
 
@@ -255,7 +299,7 @@ public class BookRide extends AppCompatActivity {
         TextView carTitle = (TextView) dialog.findViewById (R.id.car_title);
         carTitle.setText ("UBER TAXI");
         TextView carProperty = (TextView) dialog.findViewById (R.id.car_property);
-        carProperty.setText (R.string.uber_black_details);
+        carProperty.setText (R.string.uber_taxi_details);
         Button gotIt = (Button) dialog.findViewById (R.id.gotit);
         gotIt.setOnClickListener (new View.OnClickListener () {
           @Override
@@ -274,6 +318,8 @@ public class BookRide extends AppCompatActivity {
       public void onClick (View v) {
         cars.setVisibility (View.VISIBLE);
         chooseAride.setVisibility (View.INVISIBLE);
+        bookARide.setVisibility (View.VISIBLE);
+        clickImage.setVisibility (View.VISIBLE);
 
 
       }

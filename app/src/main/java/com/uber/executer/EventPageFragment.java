@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.uber.executer.models.Calendar;
 
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -27,13 +28,8 @@ import java.util.List;
  */
 public class EventPageFragment extends Fragment {
   String summary;
-  List<String> list;
-  String[] taxiTypes;
   ListView eventList;
-  protected LocationManager locationManager;
-  private Location location;
-  Double longitude;
-  Double latitude;
+  String coolTime;
   @Nullable
   @Override
   public View onCreateView (final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -46,10 +42,15 @@ public class EventPageFragment extends Fragment {
       public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
 
         Calendar calendar = (Calendar)parent.getItemAtPosition (position);
+        try {
+          coolTime = Vars.dateToRelativeString ((calendar.start).toString ());
+        } catch (ParseException e) {
+          e.printStackTrace ();
+        }
         Intent intent = new Intent (getActivity (), BookRide.class);
         intent.putExtra ("summary", calendar.getSummary ());
         intent.putExtra ("location",calendar.getLocation ());
-        intent.putExtra ("startTime", calendar.getStart ());
+        intent.putExtra ("startTime", coolTime);
         startActivity (intent);
       }
     });

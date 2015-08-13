@@ -9,32 +9,44 @@
     android:layout_height="wrap_content"
     android:id="@+id/toolbar"/>
   <LinearLayout
-    android:background="#ccc"
+    android:orientation="vertical"
     android:layout_below="@id/toolbar"
     android:id="@+id/container_for_title"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <TextView
-      android:paddingBottom="8dp"
-      android:paddingTop="8dp"
+      android:background="#999"
+      android:paddingBottom="5dp"
+      android:paddingTop="5dp"
       android:id="@+id/event_title_text"
       android:layout_below="@id/toolbar"
       android:gravity="center_horizontal"
       android:text="MEETING WITH JHON KEN"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"/>
+
   </LinearLayout>
-  <ImageView
-    android:id="@+id/main_image"
-    android:layout_marginTop="20dp"
-    android:src="@drawable/executr"
+  <TextView
+    android:background="#ccc"
+    android:paddingBottom="13dp"
+    android:paddingTop="13dp"
+    android:id="@+id/booked_events"
     android:layout_below="@id/container_for_title"
+    android:gravity="center_horizontal"
+    android:text="SHOW BOOKED EVENTS"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"/>
+  <ImageView
+    android:id="@+id/main_image"
+    android:layout_marginTop="10dp"
+    android:src="@drawable/executr"
+    android:layout_below="@id/booked_events"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"/>
   <TableLayout
     android:id="@+id/table"
-    android:layout_marginLeft="24dp"
-    android:layout_marginTop="10dp"
+    android:layout_marginLeft="16dp"
+    android:layout_marginTop="2dp"
     android:gravity="center_horizontal"
     android:layout_below="@id/main_image"
     android:layout_width="match_parent"
@@ -43,66 +55,105 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content">
       <TextView
-        android:text="LOCATION:"
+        android:text="DESTINATION:"
         android:id="@+id/location_text"
         />
-      <TextView
-        android:layout_marginLeft="10dp"
+      <EditText
+        android:lines="1"
+        android:maxLines="1"
+        android:scrollHorizontally="true"
+        android:background="#ccc"
+        android:layout_marginRight="24dp"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="-3dp"
         android:id="@+id/event_location"
         android:text="YABA"/>
     </TableRow>
     <TableRow
-      android:layout_marginTop="10dp"
+      android:layout_marginTop="4dp"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+      <TextView
+        android:text="PICK UP LOCATION:"/>
+      <EditText
+        android:lines="1"
+        android:maxLines="1"
+        android:scrollHorizontally="true"
+        android:background="#ccc"
+        android:layout_marginRight="24dp"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:id="@+id/pick_up"
+        android:layout_marginLeft="-3dp"/>
+    </TableRow>
+
+    <TableRow
+      android:layout_marginTop="12dp"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+      <TextView
+        android:text="MY LOCATION:"
+        android:id="@+id/destination_for_event"/>
+      <TextView
+        android:text="Amity/Yaba"
+        android:layout_marginLeft="-3dp"
+        android:id="@+id/event_destination"/>
+    </TableRow>
+
+    <TableRow
+      android:layout_marginTop="12dp"
       android:layout_width="match_parent"
       android:layout_height="wrap_content">
       <TextView
         android:text="START TIME:"
+        android:id="@+id/start_time"/>
+      <TextView
+        android:layout_marginRight="5dp"
+        android:text="Amity/Yaba"
+        android:layout_marginLeft="-3dp"
         android:id="@+id/event_start_time"/>
-      <TextView
-        android:layout_marginLeft="10dp"
-        android:text="10:00:00"
-        android:id="@+id/event_start"/>
     </TableRow>
+
     <TableRow
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content">
-      <TextView
-        android:text="DESTINATION:"
-        android:id="@+id/destination_for_event"/>
-      <EditText
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="30dp"
-        android:layout_weight="1"
-        android:id="@+id/event_destination"
-        android:layout_width="match_parent"/>
-    </TableRow>
-    <TableRow
+      android:layout_marginTop="15dp"
       android:id="@+id/uber_types"
-      android:layout_marginTop="10dp"
       android:layout_width="match_parent"
       android:layout_height="wrap_content">
       <TextView
         android:text="UBER TYPE"/>
       <TextView
+        android:layout_marginLeft="-3dp"
         android:id="@+id/uber_type_here"/>
     </TableRow>
     <TableRow>
       <Button
+        android:layout_marginRight="24dp"
         android:id="@+id/choose_a_ride"
         android:layout_weight="1"
         android:layout_width="match_parent"
         android:text="CHOOSE A RIDE"/>
     </TableRow>
   </TableLayout>
-
+  <TextView
+    android:gravity="center_horizontal"
+    android:id="@+id/click_to_select"
+    android:text="CLICK IMAGE TO SELECT UBER TYPE, LONG PRESS TO VIEW DETAILS"
+    android:textSize="10sp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/table"
+    android:layout_alignRight="@+id/book_a_ride"
+    android:layout_alignEnd="@+id/book_a_ride"/>
   <LinearLayout
-    android:layout_marginTop="4dp"
+    android:layout_marginTop="3dp"
     android:gravity="center_horizontal"
     android:id="@+id/cars"
     android:orientation="horizontal"
-    android:layout_below="@id/table"
+    android:layout_below="@id/click_to_select"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
+
     <RelativeLayout
       android:layout_width="wrap_content"
       android:layout_height="wrap_content">
@@ -161,13 +212,12 @@
   </LinearLayout>
   <Button
     android:id="@+id/book_a_ride"
-    android:textStyle="bold"
-    android:textSize="24dp"
+    android:textSize="18dp"
     android:textAlignment="center"
     android:text="BOOK A RIDE"
-    android:layout_marginTop="14dp"
-    android:layout_marginLeft="50dp"
-    android:layout_marginRight="50dp"
+    android:layout_marginTop="5dp"
+    android:layout_marginLeft="31dp"
+    android:layout_marginRight="31dp"
     android:gravity="center_horizontal"
     android:layout_below="@id/cars"
     android:layout_width="match_parent"

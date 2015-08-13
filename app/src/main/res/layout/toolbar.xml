@@ -5,6 +5,8 @@
   android:textColor="#fff"
   android:layout_height="wrap_content"
   android:background="@color/nativeGreen"
+  app:theme="@style/ToolBarThem"
+  app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
 
  >
   <TextView

@@ -10,6 +10,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -39,8 +40,8 @@ import com.uber.executer.models.Calendar;
 import java.util.List;
 
 public class EventPage extends AppCompatActivity {
+  DrawerLayout drawerLayout;
   Toolbar toolbar;
-
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate (savedInstanceState);
@@ -51,10 +52,13 @@ public class EventPage extends AppCompatActivity {
     mTitle.setText ("EXECUTER");
     Typeface tf = Typeface.createFromAsset (getAssets (),"MuseoSans-300.otf");
     mTitle.setTypeface (tf);
-    getSupportActionBar ().setDisplayHomeAsUpEnabled (false);
-    getSupportActionBar().setDisplayShowTitleEnabled(false);
-//    EventPageFragment fragment = (EventPageFragment)getSupportFragmentManager ().findFragmentById (R.id.fragment);
-  }
+    drawerLayout = (DrawerLayout)findViewById (R.id.drawerlayout);
+    getSupportActionBar ().setDisplayHomeAsUpEnabled (true);
+    getSupportActionBar ().setDisplayShowHomeEnabled (true);
+    getSupportActionBar ().setDisplayShowTitleEnabled (false);
+    NavFragment navigation = (NavFragment)getSupportFragmentManager ().findFragmentById (R.id.navigation_drawer);
+    navigation.setUp(R.id.navigation_drawer,drawerLayout);
+    }
 
 
   @Override

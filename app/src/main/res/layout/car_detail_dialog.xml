@@ -33,11 +33,8 @@
 
     <TextView
       android:id="@+id/car_property"
-      android:text="code of normally zoom in and zoom out animation
-      between two activities, but I want something different. I have five
-      buttons on my first activity if I click on first button then zoom
-      in would be starts from position of first button only instead of
-      zooming from centre. Please help me."
+      android:text="Everyday cars for everyday use.
+      Better, faster, and cheaper than a taxi."
       android:padding="16dp"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"/>

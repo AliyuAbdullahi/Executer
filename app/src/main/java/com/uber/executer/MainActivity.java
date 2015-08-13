@@ -13,6 +13,9 @@ import android.view.View;
 import android.view.Window;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
@@ -43,21 +46,24 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private WebView webView;
+  private TextView pleasewait;
   private Dialog authenticationDialog;
+  FrameLayout frameLayout;
+  LinearLayout linearLayout;
 
   public void authDialog(View view) {
     try {
       if (authenticationDialog == null) {
         authenticationDialog = new Dialog(this);
-        authenticationDialog.setCancelable(true);
-        authenticationDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        authenticationDialog.setContentView(R.layout.dialog_webview);
+        authenticationDialog.setCancelable (true);
+        authenticationDialog.requestWindowFeature (Window.FEATURE_NO_TITLE);
+        authenticationDialog.setContentView (R.layout.dialog_webview);
       }
 
       if (authenticationDialog != null) {
         try {
           if (!authenticationDialog.isShowing()) {
-            authenticationDialog.show();
+            authenticationDialog.show ();
             uberAuth();
           } else {
             authenticationDialog.cancel();
@@ -82,6 +88,10 @@ public class MainActivity extends AppCompatActivity {
   private void uberAuth() {
     final Activity self = this;
     webView = (WebView) authenticationDialog.findViewById(R.id.authWebView);
+    pleasewait = (TextView)authenticationDialog.findViewById (R.id.please_wait);
+
+
+
     webView.setWebViewClient(new WebViewClient() {
 
       @Override
@@ -97,8 +107,8 @@ public class MainActivity extends AppCompatActivity {
 
       @Override
       public void onPageFinished(WebView view, String url) {
-        super.onPageFinished(view, url);
-
+        super.onPageFinished (view, url);
+        pleasewait.setVisibility (View.INVISIBLE);
         if (url.contains("/calendar") && !url.contains("calendar/callback")) {
           uberHackAuth(new Date().toString());
           Log.d ("yes", url);

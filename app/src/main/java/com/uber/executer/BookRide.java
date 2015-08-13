@@ -91,8 +91,8 @@ public class BookRide extends AppCompatActivity {
     //get data from EventPageFragment and populate the view
     Intent gotten = getIntent ();
     final String location = gotten.getStringExtra ("location");
-    String summary = gotten.getStringExtra ("summary");
-    String timing = gotten.getStringExtra ("startTime");
+    final String summary = gotten.getStringExtra ("summary");
+    final String timing = gotten.getStringExtra ("startTime");
     TextView eventsummary = (TextView)findViewById (R.id.event_title_text);
     TextView eventLocation = (TextView)findViewById (R.id.event_location);
     eventsummary.setText (summary);
@@ -179,6 +179,8 @@ public class BookRide extends AppCompatActivity {
             params.put("location", locationObject.toString ());
             params.put ("destination", myDestination);
             params.put("pickUpLocation", pickup);
+            params.put("summary",summary);
+            params.put("startTime",timing);
 
             return params;
 

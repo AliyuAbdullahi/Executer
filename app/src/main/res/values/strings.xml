@@ -23,4 +23,5 @@ Expect pickup in a high-end sedan within minutes.</string>
   <string name="uber_taxi_details">No whistling, no waving, no cash needed.</string>
   <string name="drawer_opened">drawer opened</string>
   <string name="drawer_closed">drawer closed</string>
+  <string name="title_activity_event_request_confirmation">EventRequestConfirmation</string>
 </resources>

@@ -36,6 +36,10 @@
             android:name=".BookedEvents"
             android:label="@string/title_activity_booked_events" >
         </activity>
+        <activity
+            android:name=".EventRequestConfirmation"
+            android:label="@string/title_activity_event_request_confirmation" >
+        </activity>
     </application>
 
 </manifest>

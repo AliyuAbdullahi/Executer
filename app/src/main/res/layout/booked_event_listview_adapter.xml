@@ -15,11 +15,12 @@
       android:orientation="vertical"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content">
+
   <TextView
-    android:id="@+id/event_time"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"/>
-  <TextView
+    android:layout_gravity="center_vertical"
+    android:layout_marginTop="10dp"
+    android:layout_marginLeft="20dp"
+    android:textColor="#424242"
     android:id="@+id/event_summary"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"/>

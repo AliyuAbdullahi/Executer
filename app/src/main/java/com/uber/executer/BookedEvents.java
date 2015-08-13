@@ -1,13 +1,18 @@
 package com.uber.executer;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -25,50 +30,72 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BookedEvents extends AppCompatActivity {
+  Toolbar toolbar;
   ListView bookedEventList;
- private List<BookedEvent> bookedEvents = new ArrayList<> ();
+  private ArrayList<String> bookedEvents = new ArrayList<String> ();
+  private ArrayList<String> time = new ArrayList<String> ();
+  private ArrayList<String> location = new ArrayList<String>();
+  private ArrayList<BookedEvent> events = new ArrayList<BookedEvent> ();
 
 
   @Override
   protected void onCreate (Bundle savedInstanceState) {
     super.onCreate (savedInstanceState);
     setContentView (R.layout.activity_booked_events);
-    bookedEventList = (ListView)findViewById (R.id.listView);
-    RequestQueue queue = Volley.newRequestQueue (this);
+    toolbar = (Toolbar)findViewById (R.id.toolbar);
+    setSupportActionBar (toolbar);
+    getSupportActionBar().setDisplayShowTitleEnabled (false);
+    TextView toolbarTitle = (TextView)findViewById (R.id.toolbar_title);
+    toolbarTitle.setText ("EXECUTER");
+    Typeface tf = Typeface.createFromAsset (getAssets (),"MuseoSans-300.otf");
+    toolbarTitle.setTypeface (tf);
+    bookedEventList = (ListView)findViewById (R.id.bookedlist);
+    final BookedEvent current = new BookedEvent ();
+
+    RequestQueue queue = Volley.newRequestQueue (getApplicationContext ());
     final StringRequest request = new StringRequest (Request.Method.GET,
             "http://andelahack.herokuapp.com/users/35c2856e-068b-43ba-94d3-3840af926b36/requests",
             new Response.Listener<String> () {
-      BookedEvent currentEvent;
-      @Override
-      public void onResponse (String response) {
-        Toast.makeText (getApplicationContext (), response.toString (),Toast.LENGTH_LONG).show ();
-        try {
-          JSONArray results = new JSONArray (response);
-          for(int i=0; i<results.length (); i++){
-            JSONObject currentResult = results.getJSONObject (i);
-            currentEvent.setPickUpLocation (currentResult.getString ("pickUpLocation"));
-            currentEvent.setEventLocation (currentResult.getString ("destination"));
-            currentEvent.setEventTime (currentResult.getString ("time"));
-            currentEvent.setEventName (currentResult.getString ("summary"));
-          }
-        } catch (JSONException e) {
-          e.printStackTrace ();
-        }
-        bookedEvents.add (currentEvent);
-      }
-    }, new Response.ErrorListener () {
+
+              @Override
+              public void onResponse (String response) {
+                try {
+                  JSONObject result = new JSONObject (response);
+                  JSONArray array = result.getJSONArray ("response");
+                  for(int i=0; i<array.length (); i++){
+                    JSONObject currentResult = array.getJSONObject (i);
+                    current.setSummary (currentResult.getString ("summary"));
+                    current.setEventTime (currentResult.getString ("startTime"));
+                    current.getPickUpLocation (currentResult.getString ("pickUpLocation"));
+                    events.add (current);
+                    location.add (currentResult.getString ("pickUpLocation"));
+                    bookedEvents.add (currentResult.getString ("summary"));
+                  }
+                  bookedEventList.setAdapter (new ArrayAdapter<String> (getApplicationContext (),R.layout.booked_event_listview_adapter,R.id.event_summary,bookedEvents));
+                 bookedEventList.setOnItemClickListener (new AdapterView.OnItemClickListener () {
+                   @Override
+                   public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
+                     Toast.makeText (getApplicationContext (),location.get (position),Toast.LENGTH_LONG).show ();
+                   }
+                 });
+                } catch (JSONException e) {
+                  e.printStackTrace ();
+                }
+
+              }
+            }, new Response.ErrorListener () {
       @Override
       public void onErrorResponse (VolleyError error) {
 
       }
     });
     queue.add (request);
-    myAdapter myadapter = new myAdapter (this,bookedEvents);
-    bookedEventList.setAdapter (myadapter);
+
   }
 
   @Override
@@ -92,13 +119,18 @@ public class BookedEvents extends AppCompatActivity {
 
     return super.onOptionsItemSelected (item);
   }
-  public class myAdapter extends BaseAdapter{
-    List<BookedEvent> bookedEvents = new ArrayList<> ();
-    Context context;
-    public myAdapter(Context context, List<BookedEvent> bookedEvents){
-      this.bookedEvents = bookedEvents;
+
+
+
+
+  class myAdapter extends BaseAdapter {
+    private Context context;
+    ArrayList<BookedEvent> bookedEvents;
+    public myAdapter(Context context, ArrayList<BookedEvent> bookedEvents){
       this.context = context;
+      this.bookedEvents = bookedEvents;
     }
+
     @Override
     public int getCount () {
       return bookedEvents.size ();
@@ -116,20 +148,19 @@ public class BookedEvents extends AppCompatActivity {
 
     @Override
     public View getView (int position, View convertView, ViewGroup parent) {
-      BookedEvent currentBookedEvent = bookedEvents.get (position);
       View row = null;
       if(convertView == null){
-        LayoutInflater inflater = (LayoutInflater)getSystemService (Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater)context.getSystemService (Context.LAYOUT_INFLATER_SERVICE);
         row = inflater.inflate (R.layout.booked_event_listview_adapter, parent, false);
-        TextView textView = (TextView)row.findViewById (R.id.event_time);
-        TextView summar = (TextView)row.findViewById (R.id.event_summary);
-        textView.setText (currentBookedEvent.getEventTime ());
-        summar.setText (currentBookedEvent.getEventName ());
+
       }
       else {
         row = convertView;
       }
-      return row;
+      TextView summary = (TextView)row.findViewById(R.id.event_summary);
+      BookedEvent currentEvent = bookedEvents.get (position);
+      summary.setText (currentEvent.getSummary ());
+      return null;
     }
   }
 }

@@ -14,6 +14,21 @@ public class BookedEvent {
     this.context = context;
 
   }
+  BookedEvent(String summary,String eventTime) {
+    this.summary=summary;
+    this.eventTime=eventTime;
+  }
+
+  public void setSummary (String summary) {
+
+    this.summary = summary;
+  }
+
+  public String getSummary () {
+    return summary;
+  }
+
+  String summary;
   String eventName;
   String eventTime;
   String eventLocation;
@@ -58,5 +73,9 @@ public class BookedEvent {
 
   public String getEventDestination () {
     return eventDestination;
+  }
+
+  public void getPickUpLocation (String pickUpLocation) {
+
   }
 }

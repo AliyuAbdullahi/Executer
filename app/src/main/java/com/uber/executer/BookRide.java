@@ -47,6 +47,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BookRide extends AppCompatActivity {
+  TextView myCurrentLocation;
   TextView clickImage;
   TextView startTime;
   TextView showBookedEvents;
@@ -90,9 +91,12 @@ public class BookRide extends AppCompatActivity {
 
     //get data from EventPageFragment and populate the view
     Intent gotten = getIntent ();
+    final double longitude = gotten.getDoubleExtra ("longitude",0);
+    final double latitude = gotten.getDoubleExtra ("latitude",0);
     final String location = gotten.getStringExtra ("location");
     final String summary = gotten.getStringExtra ("summary");
     final String timing = gotten.getStringExtra ("startTime");
+    final String myLocation = gotten.getStringExtra ("currentLocation");
     TextView eventsummary = (TextView)findViewById (R.id.event_title_text);
     TextView eventLocation = (TextView)findViewById (R.id.event_location);
     eventsummary.setText (summary);
@@ -112,7 +116,8 @@ public class BookRide extends AppCompatActivity {
     clickImage.setVisibility (View.INVISIBLE);
     //get event start time
     startTime = (TextView)tableLayout.findViewById (R.id.event_start_time);
-
+    myCurrentLocation = (TextView)tableLayout.findViewById (R.id.my_current_location);
+    myCurrentLocation.setText (myLocation);
 
     startTime.setText (timing);
 
@@ -136,9 +141,9 @@ public class BookRide extends AppCompatActivity {
       public void onClick (View v) {
         try{
           locationObject = new JSONObject ();
-          locationObject.put ("longitude","longitude");
-          locationObject.put("latitude","latitude");
-          locationObject.put("address","address");
+          locationObject.put ("longitude",longitude);
+          locationObject.put("latitude",latitude);
+          locationObject.put("address",myLocation);
         }
         catch(JSONException e){
           e.printStackTrace ();
@@ -181,6 +186,7 @@ public class BookRide extends AppCompatActivity {
             params.put("pickUpLocation", pickup);
             params.put("summary",summary);
             params.put("startTime",timing);
+
 
             return params;
 

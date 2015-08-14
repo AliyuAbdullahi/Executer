@@ -1,16 +1,26 @@
 package com.uber.executer;
 
+import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 public class EventRequestConfirmation extends AppCompatActivity {
-
+  Toolbar toolbar;
   @Override
   protected void onCreate (Bundle savedInstanceState) {
     super.onCreate (savedInstanceState);
     setContentView (R.layout.activity_event_request_confirmation);
+    toolbar = (Toolbar)findViewById (R.id.toolbar);
+    setSupportActionBar (toolbar);
+    getSupportActionBar().setDisplayShowTitleEnabled (false);
+    TextView toolbarTitle = (TextView)findViewById (R.id.toolbar_title);
+    toolbarTitle.setText ("EXECUTER");
+    Typeface tf = Typeface.createFromAsset (getAssets (),"MuseoSans-300.otf");
+    toolbarTitle.setTypeface (tf);
   }
 
   @Override

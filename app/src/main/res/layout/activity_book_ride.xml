@@ -98,7 +98,7 @@
       <TextView
         android:text="Amity/Yaba"
         android:layout_marginLeft="-3dp"
-        android:id="@+id/event_destination"/>
+        android:id="@+id/my_current_location"/>
     </TableRow>
 
     <TableRow

@@ -3,11 +3,14 @@ package com.uber.executer;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,19 +20,42 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.uber.executer.models.Calendar;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by aliyuolalekan on 8/10/15.
  */
-public class EventPageFragment extends Fragment {
+public class EventPageFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener{
+  private static final String TAG = "Connect";
   String summary;
   ListView eventList;
   String coolTime;
+  String myStreet;
+  protected  GoogleApiClient googleApiClient;
+  protected LocationRequest locationRequest;
+  double longitude;
+  double latitude;
   @Nullable
   @Override
   public View onCreateView (final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -41,21 +67,96 @@ public class EventPageFragment extends Fragment {
       @Override
       public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
 
-        Calendar calendar = (Calendar)parent.getItemAtPosition (position);
+        Calendar calendar = (Calendar) parent.getItemAtPosition (position);
         try {
           coolTime = Vars.dateToRelativeString ((calendar.start).toString ());
         } catch (ParseException e) {
           e.printStackTrace ();
         }
+
+        Geocoder geocoder = new Geocoder(getActivity (), Locale.getDefault ());
+        List<Address> addresses = null;
+        try {
+          addresses = geocoder.getFromLocation(latitude, longitude, 1);
+        } catch (IOException e) {
+          e.printStackTrace ();
+        }
+        String cityName = addresses.get(0).getAddressLine(0);
+        String stateName = addresses.get(0).getAddressLine(1);
+        String countryName = addresses.get(0).getAddressLine(2);
+        Toast.makeText (getActivity (),cityName+"/"+stateName,Toast.LENGTH_LONG).show ();
         Intent intent = new Intent (getActivity (), BookRide.class);
         intent.putExtra ("summary", calendar.getSummary ());
-        intent.putExtra ("location",calendar.getLocation ());
+        intent.putExtra ("location", calendar.getLocation ());
         intent.putExtra ("startTime", coolTime);
+        intent.putExtra ("currentLocation", cityName+"/"+stateName);
+        intent.putExtra ("longitude",longitude);
+        intent.putExtra ("latitude",latitude);
         startActivity (intent);
       }
     });
     return view;
   }
+  public void onStart(){
+    super.onStart ();
+    googleApiClient.connect ();
+  }
+  public void onStop(){
+    super.onStop ();
+    if(googleApiClient.isConnected ()){
+      googleApiClient.disconnect ();
+    }
+  }
+  protected synchronized void buidGoogleApiClient(){
+    googleApiClient = new GoogleApiClient.Builder (getActivity ())
+            .addConnectionCallbacks (this)
+            .addOnConnectionFailedListener (this)
+            .addApi (LocationServices.API).build ();
+  }
+
+  @Override
+  public void onCreate (@Nullable Bundle savedInstanceState) {
+    super.onCreate (savedInstanceState);
+    buidGoogleApiClient ();
+      }
+
+  @Override
+  public void onConnected (Bundle bundle) {
+    locationRequest = LocationRequest.create ();
+    locationRequest.setPriority (LocationRequest.PRIORITY_HIGH_ACCURACY);
+    locationRequest.setInterval (1000);
+    LocationServices.FusedLocationApi.requestLocationUpdates (googleApiClient, locationRequest, this);
+
+  }
+
+  @Override
+  public void onConnectionSuspended (int i) {
+    Log.i (TAG, "Connection suspended");
+    googleApiClient.connect();
+  }
+
+  @Override
+  public void onLocationChanged (Location location) {
+//    Toast.makeText (getActivity (), String.valueOf (location.getLatitude ())+" "+String.valueOf (location.getLongitude ()),Toast.LENGTH_LONG).show ();
+    longitude = location.getLongitude ();
+    latitude = location.getLatitude ();
+
+  }
+  public double getLatitude(double latitude){
+    this.latitude = latitude;
+    return latitude;
+  }
+  public double getLongitude(double longitude){
+    this.longitude = longitude;
+    return longitude;
+  }
+
+  @Override
+  public void onConnectionFailed (ConnectionResult connectionResult) {
+    Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + connectionResult.getErrorCode());
+  }
+
+
 
   public class EventAdapter extends BaseAdapter {
     private Context context;

@@ -2,9 +2,12 @@ package com.uber.executer;
 
 import android.app.ActionBar;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -139,69 +142,76 @@ public class BookRide extends AppCompatActivity {
     bookARide.setOnClickListener (new View.OnClickListener () {
       @Override
       public void onClick (View v) {
-        try{
-          locationObject = new JSONObject ();
-          locationObject.put ("longitude",longitude);
-          locationObject.put("latitude",latitude);
-          locationObject.put("address",myLocation);
+        if(isOnline ()){
+          try{
+            locationObject = new JSONObject ();
+            locationObject.put ("longitude",longitude);
+            locationObject.put("latitude",latitude);
+            locationObject.put("address",myLocation);
+          }
+          catch(JSONException e){
+            e.printStackTrace ();
+          }
+          //get pickup location text in string format
+          pickup = pickUpLocation.getText ().toString ();
+
+          final String myDestination = destination.getText ().toString ();
+          //get the car type
+          final String car = carType.getText ().toString ();
+          // get the current time of request
+          long time = new Date ().getTime ();
+          DateFormat formatter = new SimpleDateFormat ("HH:mm:ss:SSS");
+          String formattedTime = formatter.format (time);
+
+          //get user location
+          //get user destination
+          //get user longitude
+          //get user latitude
+
+          RequestQueue queue = Volley.newRequestQueue (getApplicationContext ());
+          StringRequest stringRequest = new StringRequest (Request.Method.POST, "http://andelahack.herokuapp.com/users/35c2856e-068b-43ba-94d3-3840af926b36/requests", new Response.Listener<String> () {
+            @Override
+            public void onResponse (String response) {
+              Toast.makeText (getApplicationContext (), response.toString (),Toast.LENGTH_LONG).show ();
+
+            }
+          }, new Response.ErrorListener () {
+            @Override
+            public void onErrorResponse (VolleyError error) {
+              Toast.makeText (getApplicationContext (), "Error: " +error,Toast.LENGTH_LONG).show ();
+            }
+          }){
+            @Override
+            protected Map<String, String> getParams () throws AuthFailureError {
+              super.getParams ();
+              Map<String,String> params = new HashMap<String, String> ();
+              params.put("uberType",car);
+              params.put("location", locationObject.toString ());
+              params.put ("destination", myDestination);
+              params.put("pickUpLocation", pickup);
+              params.put("summary",summary);
+              params.put("startTime",timing);
+
+
+              return params;
+
+            }
+
+            @Override
+            public Map<String, String> getHeaders () throws AuthFailureError {
+              super.getHeaders ();
+              Map<String,String> params = new HashMap<String, String>();
+              params.put("Content-Type","application/x-www-form-urlencoded");
+              return params;
+            }
+          };
+          queue.add (stringRequest);
+          pickUpLocation.setText ("");
         }
-        catch(JSONException e){
-          e.printStackTrace ();
+        else {
+          Toast.makeText (BookRide.this, "Enable network connection", Toast.LENGTH_SHORT).show ();
         }
-        //get pickup location text in string format
-        pickup = pickUpLocation.getText ().toString ();
 
-        final String myDestination = destination.getText ().toString ();
-        //get the car type
-        final String car = carType.getText ().toString ();
-        // get the current time of request
-        long time = new Date ().getTime ();
-        DateFormat formatter = new SimpleDateFormat ("HH:mm:ss:SSS");
-        String formattedTime = formatter.format (time);
-
-        //get user location
-        //get user destination
-        //get user longitude
-        //get user latitude
-        RequestQueue queue = Volley.newRequestQueue (getApplicationContext ());
-        StringRequest stringRequest = new StringRequest (Request.Method.POST, "http://andelahack.herokuapp.com/users/35c2856e-068b-43ba-94d3-3840af926b36/requests", new Response.Listener<String> () {
-          @Override
-          public void onResponse (String response) {
-            Toast.makeText (getApplicationContext (), response.toString (),Toast.LENGTH_LONG).show ();
-
-          }
-        }, new Response.ErrorListener () {
-          @Override
-          public void onErrorResponse (VolleyError error) {
-            Toast.makeText (getApplicationContext (), "Error: " +error,Toast.LENGTH_LONG).show ();
-          }
-        }){
-          @Override
-          protected Map<String, String> getParams () throws AuthFailureError {
-            super.getParams ();
-            Map<String,String> params = new HashMap<String, String> ();
-            params.put("uberType",car);
-            params.put("location", locationObject.toString ());
-            params.put ("destination", myDestination);
-            params.put("pickUpLocation", pickup);
-            params.put("summary",summary);
-            params.put("startTime",timing);
-
-
-            return params;
-
-          }
-
-          @Override
-          public Map<String, String> getHeaders () throws AuthFailureError {
-            super.getHeaders ();
-            Map<String,String> params = new HashMap<String, String>();
-            params.put("Content-Type","application/x-www-form-urlencoded");
-            return params;
-          }
-        };
-        queue.add (stringRequest);
-        pickUpLocation.setText ("");
       }
     });
 
@@ -334,6 +344,17 @@ public class BookRide extends AppCompatActivity {
     });
   }
 
+  //check if there is network
+  public boolean isOnline() {
+    ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService (Context.CONNECTIVITY_SERVICE);
+    NetworkInfo info = connectivityManager.getActiveNetworkInfo();
+    if (info != null && info.isConnectedOrConnecting()) {
+      return true;
+    } else {
+      return false;
+    }
+
+  }
 
   @Override
   public boolean onCreateOptionsMenu (Menu menu) {

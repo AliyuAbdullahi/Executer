@@ -2,8 +2,11 @@ package com.uber.executer;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +20,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
@@ -64,9 +68,15 @@ public class MainActivity extends AppCompatActivity {
         try {
           if (!authenticationDialog.isShowing()) {
             authenticationDialog.show ();
-            uberAuth();
+            if(isOnline ()){
+              uberAuth();
+            }
+            else{
+              Toast.makeText (getApplicationContext (),"Enable network connection",Toast.LENGTH_SHORT).show ();
+            }
+
           } else {
-            authenticationDialog.cancel();
+            authenticationDialog.cancel ();
             authenticationDialog = null;
           }
         } catch (Exception e0) {
@@ -82,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
   private void uberHackAuth(String string) {
     Vars.user.response.google_token = string;
     JsonObject user = new Gson().toJsonTree(Vars.user).getAsJsonObject();
-    Vars.saveDB("user", user.toString(), this);
+    Vars.saveDB ("user", user.toString (), this);
   }
 
   private void uberAuth() {
@@ -118,15 +128,25 @@ public class MainActivity extends AppCompatActivity {
       }
     });
     webView = Vars.popUpWebView(webView, this);
-    webView.loadUrl("https://accounts.google.com/o/oauth2/auth?access_type=offline&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar.readonly&response_type=code&client_id=453264479059-fc56k30fdhl07leahq5n489ct7ifk7md.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fandelahack.herokuapp.com%2Fcalendar%2Fcallback");
+    webView.loadUrl ("https://accounts.google.com/o/oauth2/auth?access_type=offline&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar.readonly&response_type=code&client_id=453264479059-fc56k30fdhl07leahq5n489ct7ifk7md.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fandelahack.herokuapp.com%2Fcalendar%2Fcallback");
 
   }
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     // Inflate the menu; this adds items to the action bar if it is present.
-    getMenuInflater().inflate(R.menu.menu_main, menu);
+    getMenuInflater().inflate (R.menu.menu_main, menu);
     return true;
+  }
+  public boolean isOnline() {
+    ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService (Context.CONNECTIVITY_SERVICE);
+    NetworkInfo info = connectivityManager.getActiveNetworkInfo();
+    if (info != null && info.isConnectedOrConnecting()) {
+      return true;
+    } else {
+      return false;
+    }
+
   }
 
   @Override

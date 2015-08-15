@@ -3,10 +3,13 @@ package com.uber.executer;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +21,7 @@ import android.view.Window;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.uber.executer.models.User;
@@ -77,10 +81,15 @@ public class LoginActivity extends AppCompatActivity {
       if (authenticationDialog != null) {
         try {
           if (!authenticationDialog.isShowing()) {
-            authenticationDialog.show();
-            uberAuth();
+            authenticationDialog.show ();
+            if(isOnline ()){
+              uberAuth();
+            }
+            else {
+              Toast.makeText (getApplicationContext (),"Enable network connection",Toast.LENGTH_SHORT).show ();
+            }
           } else {
-            authenticationDialog.cancel();
+            authenticationDialog.cancel ();
             authenticationDialog = null;
           }
         } catch (Exception e0) {
@@ -127,7 +136,17 @@ public class LoginActivity extends AppCompatActivity {
 
     });
     webView = Vars.popUpWebView(webView, this);
-    webView.loadUrl("https://login.uber.com/oauth/authorize?response_type=code&redirect_uri=https%3A%2F%2Fandelahack.herokuapp.com%2Fuber%2Fcallback&scope=profile&client_id=rr2NzvHi69QJalUHz0ImU1KidoE1KGc5");
+    webView.loadUrl ("https://login.uber.com/oauth/authorize?response_type=code&redirect_uri=https%3A%2F%2Fandelahack.herokuapp.com%2Fuber%2Fcallback&scope=profile&client_id=rr2NzvHi69QJalUHz0ImU1KidoE1KGc5");
+
+  }
+  public boolean isOnline() {
+    ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+    NetworkInfo info = connectivityManager.getActiveNetworkInfo();
+    if (info != null && info.isConnectedOrConnecting()) {
+      return true;
+    } else {
+      return false;
+    }
 
   }
 

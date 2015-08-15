@@ -66,8 +66,12 @@ public class NavFragment extends Fragment {
     listView.setOnItemClickListener (new AdapterView.OnItemClickListener () {
       @Override
       public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
-        Intent intent = new Intent (getActivity (), BookedEvents.class);
-        startActivity (intent);
+       String itemElement = (String)listView.getItemAtPosition (position);
+        switch (itemElement){
+          case "Booked Events":
+            Intent intent = new Intent (getActivity (), BookedEvents.class);
+            startActivity (intent);
+        }
       }
     });
     return view;

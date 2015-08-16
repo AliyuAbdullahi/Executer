@@ -96,7 +96,6 @@ public class BookedEvents extends AppCompatActivity {
                    @Override
                    public void onItemClick (AdapterView<?> parent, View view, final int position, final long id) {
 
-                     Toast.makeText (getApplicationContext (),events.get (position).getId (),Toast.LENGTH_LONG).show ();
                      dialog = new Dialog (BookedEvents.this);
                      dialog.setContentView (R.layout.dialog_delete_item);
                      dialog.setTitle (bookedEvents.get (position));
@@ -129,7 +128,7 @@ public class BookedEvents extends AppCompatActivity {
                                    new Response.Listener<String> () {
                                      @Override
                                      public void onResponse (String response) {
-                                       Toast.makeText (getApplicationContext (), response, Toast.LENGTH_SHORT).show ();
+                                       Toast.makeText (getApplicationContext (), "Deleted Successfully", Toast.LENGTH_SHORT).show ();
 
                                      }
                                    }, new Response.ErrorListener () {

@@ -84,7 +84,6 @@ public class EventPageFragment extends Fragment implements GoogleApiClient.Conne
         String cityName = addresses.get(0).getAddressLine(0);
         String stateName = addresses.get(0).getAddressLine(1);
         String countryName = addresses.get(0).getAddressLine(2);
-        Toast.makeText (getActivity (),cityName+"/"+stateName,Toast.LENGTH_LONG).show ();
         Intent intent = new Intent (getActivity (), BookRide.class);
         intent.putExtra ("summary", calendar.getSummary ());
         intent.putExtra ("location", calendar.getLocation ());

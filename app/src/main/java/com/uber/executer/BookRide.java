@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -50,6 +51,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BookRide extends AppCompatActivity {
+  DrawerLayout drawerLayout;
   TextView myCurrentLocation;
   TextView clickImage;
   TextView startTime;
@@ -85,11 +87,16 @@ public class BookRide extends AppCompatActivity {
     //set up toolbar
     toolbar = (Toolbar)findViewById (R.id.toolbar);
     setSupportActionBar (toolbar);
-    getSupportActionBar().setDisplayShowTitleEnabled (false);
+    getSupportActionBar ().setDisplayHomeAsUpEnabled (true);
+    getSupportActionBar ().setDisplayShowHomeEnabled (true);
+    getSupportActionBar ().setDisplayShowTitleEnabled (false);
     TextView toolbarTitle = (TextView)findViewById (R.id.toolbar_title);
     toolbarTitle.setText ("EXECUTER");
     Typeface tf = Typeface.createFromAsset (getAssets (),"MuseoSans-300.otf");
     toolbarTitle.setTypeface (tf);
+    drawerLayout = (DrawerLayout)findViewById (R.id.layoutdrawer);
+    NavFragment navigation = (NavFragment)getSupportFragmentManager ().findFragmentById (R.id.navigation_drawer);
+    navigation.setUp (R.id.navigation_drawer, drawerLayout);
 
 
     //get data from EventPageFragment and populate the view
@@ -123,6 +130,9 @@ public class BookRide extends AppCompatActivity {
     myCurrentLocation.setText (myLocation);
 
     startTime.setText (timing);
+
+    //set up drawer layout
+    drawerLayout = (DrawerLayout)findViewById (R.id.drawerlayout);
 
     row.setVisibility (View.INVISIBLE);
     chooseAride = (Button)tableLayout.findViewById (R.id.choose_a_ride);
@@ -165,7 +175,7 @@ public class BookRide extends AppCompatActivity {
           StringRequest stringRequest = new StringRequest (Request.Method.POST, "http://andelahack.herokuapp.com/users/"+Vars.user.response.uuid+"/requests", new Response.Listener<String> () {
             @Override
             public void onResponse (String response) {
-              Toast.makeText (getApplicationContext (), response.toString (),Toast.LENGTH_LONG).show ();
+              Toast.makeText (getApplicationContext (), "Success!",Toast.LENGTH_LONG).show ();
 
             }
           }, new Response.ErrorListener () {

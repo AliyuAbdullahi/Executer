@@ -5,16 +5,16 @@ import android.content.Context;
 /**
  * Created by aliyuolalekan on 8/12/15.
  */
-public class BookedEvent {
+public class BookedEventData {
   Context context;
-  public BookedEvent(){
+  public BookedEventData (){
 
   }
-  public BookedEvent(Context context){
+  public BookedEventData (Context context){
     this.context = context;
 
   }
-  BookedEvent(String summary,String eventTime) {
+  BookedEventData (String summary, String eventTime) {
     this.summary=summary;
     this.eventTime=eventTime;
   }
@@ -34,6 +34,24 @@ public class BookedEvent {
   String eventLocation;
   String pickUpLocation;
   String eventDestination;
+  String id;
+  String uberType;
+
+  public void setUberType (String uberType) {
+    this.uberType = uberType;
+  }
+
+  public String getUberType () {
+    return uberType;
+  }
+
+  public void setId (String id) {
+    this.id = id;
+  }
+
+  public String getId () {
+    return id;
+  }
 
   public void setEventName (String eventName) {
     this.eventName = eventName;

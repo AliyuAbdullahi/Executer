@@ -3,18 +3,13 @@
   android:orientation="vertical"
   android:layout_width="match_parent"
   android:layout_height="match_parent">
-  <TextView
-    android:gravity="center_horizontal"
-    android:layout_centerHorizontal="true"
-    android:paddingTop="5dp"
-    android:paddingBottom="5dp"
-    android:background="#999"
-    android:text="Title"
-    android:id="@+id/title_for_booked_event"
+  <View
+    android:id="@+id/view"
+    android:background="#ccc"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"/>
+    android:layout_height="5dp"/>
   <RelativeLayout
-    android:layout_below="@id/title_for_booked_event"
+    android:layout_below="@id/view"
     android:layout_marginLeft="30dp"
     android:layout_marginRight="30dp"
     android:layout_width="wrap_content"
@@ -27,36 +22,50 @@
     <TableRow
       android:layout_width="match_parent"
       android:layout_height="wrap_content">
-      <TextView/>
-      <TextView/>
     </TableRow>
     <TableRow
       android:layout_width="match_parent"
       android:layout_height="wrap_content">
       <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
         android:text="DESTINATION:"/>
-      <TextView/>
+      <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id="@+id/destination_reciept"/>
     </TableRow>
     <TableRow
       android:layout_width="match_parent"
       android:layout_height="wrap_content">
       <TextView
-        android:text="TIME OF REQUEST:"/>
-      <TextView/>
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="START TIME:"/>
+      <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id="@+id/time_reciept"/>
     </TableRow>
     <TableRow
       android:layout_width="match_parent"
       android:layout_height="wrap_content">
       <TextView
-        android:text="UBER TYPE REQUESTED:"/>
-      <TextView/>
+        android:text="UBER TYPE:"/>
+      <TextView
+        android:id="@+id/uber_type_reciept"/>
     </TableRow>
     <TableRow
       android:layout_width="match_parent"
       android:layout_height="wrap_content">
       <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
         android:text="YOUR LOCATION:"/>
-      <TextView/>
+      <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id="@+id/location_reciept"/>
     </TableRow>
   </TableLayout>
   <LinearLayout
@@ -67,6 +76,7 @@
     <Button
       style="?android:attr/borderlessButtonStyle"
       android:text="Ok"
+      android:id="@+id/okay"
       android:layout_weight="1"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"/>

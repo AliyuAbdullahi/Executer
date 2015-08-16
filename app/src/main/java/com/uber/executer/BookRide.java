@@ -124,13 +124,6 @@ public class BookRide extends AppCompatActivity {
 
     startTime.setText (timing);
 
-    showBookedEvents = (TextView)findViewById (R.id.booked_events);
-    showBookedEvents.setOnClickListener (new View.OnClickListener () {
-      @Override
-      public void onClick (View v) {
-        showBookedEvents.setBackgroundColor (Color.argb (60,193,193,193));
-      }
-    });
     row.setVisibility (View.INVISIBLE);
     chooseAride = (Button)tableLayout.findViewById (R.id.choose_a_ride);
     carType = (TextView)tableLayout.findViewById (R.id.uber_type_here);
@@ -169,7 +162,7 @@ public class BookRide extends AppCompatActivity {
           //get user latitude
 
           RequestQueue queue = Volley.newRequestQueue (getApplicationContext ());
-          StringRequest stringRequest = new StringRequest (Request.Method.POST, "http://andelahack.herokuapp.com/users/35c2856e-068b-43ba-94d3-3840af926b36/requests", new Response.Listener<String> () {
+          StringRequest stringRequest = new StringRequest (Request.Method.POST, "http://andelahack.herokuapp.com/users/"+Vars.user.response.uuid+"/requests", new Response.Listener<String> () {
             @Override
             public void onResponse (String response) {
               Toast.makeText (getApplicationContext (), response.toString (),Toast.LENGTH_LONG).show ();
@@ -313,7 +306,7 @@ public class BookRide extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) dialog.findViewById (R.id.toolbar);
         dialog.setTitle ("");
         ImageView carImage = (ImageView) dialog.findViewById (R.id.uber_black_detail_car);
-        carImage.setImageResource (R.drawable.uber_taxi);
+        carImage.setImageResource (R.drawable.taxi);
         TextView carTitle = (TextView) dialog.findViewById (R.id.car_title);
         carTitle.setText ("UBER TAXI");
         TextView carProperty = (TextView) dialog.findViewById (R.id.car_property);

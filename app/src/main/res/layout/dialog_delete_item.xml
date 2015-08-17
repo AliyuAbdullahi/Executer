@@ -55,18 +55,6 @@
       <TextView
         android:id="@+id/uber_type_reciept"/>
     </TableRow>
-    <TableRow
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content">
-      <TextView
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:text="YOUR LOCATION:"/>
-      <TextView
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:id="@+id/location_reciept"/>
-    </TableRow>
   </TableLayout>
   <LinearLayout
     android:layout_below="@id/table_of_booked_events"

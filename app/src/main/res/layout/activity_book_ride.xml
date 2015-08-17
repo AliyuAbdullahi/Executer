@@ -8,7 +8,7 @@
   <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.uber.executer.BookRide">
+    tools:context="com.uber.executer.activities.BookRide">
     <include
       layout="@layout/toolbar"
       android:layout_width="match_parent"
@@ -207,6 +207,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
       <ImageView
+        android:layout_marginRight="2dp"
         android:layout_marginTop="20dp"
         android:scaleType="centerCrop"
         android:src="@drawable/uber_black"
@@ -241,6 +242,6 @@
     android:id="@+id/navigation_drawer"
     android:layout_width="280dp"
     android:layout_height="match_parent"
-    android:name="com.uber.executer.NavFragment"
+    android:name="com.uber.executer.fragments.NavFragment"
     tools:layout="@layout/navigation_layout"/>
 </android.support.v4.widget.DrawerLayout>

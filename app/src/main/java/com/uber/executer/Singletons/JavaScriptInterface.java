@@ -1,4 +1,4 @@
-package com.uber.executer;
+package com.uber.executer.Singletons;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -7,6 +7,9 @@ import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.uber.executer.Singletons.Vars;
+import com.uber.executer.activities.EventPage;
+import com.uber.executer.activities.MainActivity;
 import com.uber.executer.context.AppContext;
 import com.uber.executer.models.Calendar;
 import com.uber.executer.models.User;

@@ -1,4 +1,4 @@
-package com.uber.executer;
+package com.uber.executer.Singletons;
 
 /**
  * Created by goodson on 3/28/15.
@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
+import com.uber.executer.R;
 import com.uber.executer.models.Calendar;
 import com.uber.executer.models.User;
 
@@ -329,7 +330,7 @@ public class Vars {
         webView.getSettings().setDatabaseEnabled(true);
         webView.getSettings().setGeolocationEnabled(true);
 
-        webView.addJavascriptInterface(new JavaScriptInterface(self,webView),"uber");
+        webView.addJavascriptInterface(new JavaScriptInterface (self,webView),"uber");
         webView.requestFocus(View.FOCUS_DOWN);
         webView.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {

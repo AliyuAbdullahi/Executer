@@ -1,7 +1,7 @@
 package com.uber.executer.models;
 
 import com.google.gson.annotations.SerializedName;
-import com.uber.executer.Vars;
+import com.uber.executer.Singletons.Vars;
 
 /**
  * Created by goodson on 7/8/15.

@@ -1,4 +1,4 @@
-package com.uber.executer;
+package com.uber.executer.activities;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -21,23 +21,21 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.uber.executer.R;
+import com.uber.executer.Singletons.Vars;
 import com.uber.executer.models.BookedEventData;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class BookedEvents extends AppCompatActivity {
   Toolbar toolbar;
@@ -47,7 +45,7 @@ public class BookedEvents extends AppCompatActivity {
   private ArrayList<String> bookedEvents = new ArrayList<String> ();
   private ArrayList<String> location = new ArrayList<String>();
   private ArrayList<BookedEventData> events = new ArrayList<BookedEventData> ();
-
+  TextView noevent;
 
 
   @Override
@@ -61,19 +59,21 @@ public class BookedEvents extends AppCompatActivity {
     toolbarTitle.setText ("EXECUTER");
     Typeface tf = Typeface.createFromAsset (getAssets (),"MuseoSans-300.otf");
     toolbarTitle.setTypeface (tf);
-    bookedEventList = (ListView)findViewById (R.id.bookedlist);
 
+    noevent = (TextView)findViewById (R.id.noeventavailable);
+    noevent.setVisibility (View.INVISIBLE);
+    bookedEventList = (ListView)findViewById (R.id.bookedlist);
 
     RequestQueue queue = Volley.newRequestQueue (getApplicationContext ());
     final StringRequest request = new StringRequest (Request.Method.GET,
-            "http://andelahack.herokuapp.com/users/"+Vars.user.response.uuid+"/requests",
+            "http://andelahack.herokuapp.com/users/"+ Vars.user.response.uuid+"/requests",
             new Response.Listener<String> () {
 
               @Override
               public void onResponse (String response) {
                 try {
                   JSONObject result = new JSONObject (response);
-                  JSONArray array = result.getJSONArray ("response");
+                  final JSONArray array = result.getJSONArray ("response");
                   for(int i=0; i<array.length (); i++){
                     BookedEventData current = new BookedEventData ();
                     JSONObject currentResult = array.getJSONObject (i);
@@ -89,9 +89,9 @@ public class BookedEvents extends AppCompatActivity {
 
                   }
                   adapter = new ArrayAdapter<String> (getApplicationContext (),R.layout.booked_event_listview_adapter,R.id.event_summary,bookedEvents);
-
-                bookedEventList.setAdapter (adapter);
-
+                  if(bookedEventList == null)
+                    noevent.setVisibility (View.VISIBLE);
+                 bookedEventList.setAdapter (adapter);
                  bookedEventList.setOnItemClickListener (new AdapterView.OnItemClickListener () {
                    @Override
                    public void onItemClick (AdapterView<?> parent, View view, final int position, final long id) {
@@ -100,13 +100,12 @@ public class BookedEvents extends AppCompatActivity {
                      dialog.setContentView (R.layout.dialog_delete_item);
                      dialog.setTitle (bookedEvents.get (position));
                      Button delete = (Button)dialog.findViewById (R.id.delete_booked_event);
-                     TextView location = (TextView)dialog.findViewById (R.id.location_reciept);
                      TextView timeRciept = (TextView)dialog.findViewById (R.id.time_reciept);
                      TextView uberTypeReciept = (TextView)dialog.findViewById (R.id.uber_type_reciept);
                      TextView destinationReciept = (TextView)dialog.findViewById (R.id.destination_reciept);
-                     location.setText (events.get (position).getEventLocation ());
                      uberTypeReciept.setText (events.get (position).getUberType ());
-                     timeRciept.setText (events.get (position).getEventTime ());
+                     String[] ary = events.get (position).getEventTime ().split (" ");
+                     timeRciept.setText (ary[0]+" "+ary[1]+" "+ary[2]);
                      destinationReciept.setText (events.get (position).getEventDestination ());
 
                      Button ok = (Button)dialog.findViewById (R.id.okay);
@@ -191,6 +190,7 @@ public class BookedEvents extends AppCompatActivity {
 
     //noinspection SimplifiableIfStatement
     if (id == R.id.action_settings) {
+      Toast.makeText (getApplicationContext (),"Empty for now",Toast.LENGTH_SHORT).show ();
       return true;
     }
 

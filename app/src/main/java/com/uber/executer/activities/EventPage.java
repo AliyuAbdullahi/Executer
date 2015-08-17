@@ -1,50 +1,28 @@
-package com.uber.executer;
+package com.uber.executer.activities;
 
-import android.app.Dialog;
-import android.content.Context;
-import android.content.Intent;
 import android.graphics.Typeface;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.net.Uri;
-import android.provider.Settings;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.uber.executer.models.Calendar;
-
-import java.util.List;
+import com.uber.executer.fragments.NavFragment;
+import com.uber.executer.R;
 
 public class EventPage extends AppCompatActivity {
+  private View containerView;
+  int count;
   DrawerLayout drawerLayout;
   Toolbar toolbar;
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate (savedInstanceState);
+    count = 0;
     setContentView (R.layout.activity_event_page);
     toolbar = (Toolbar)findViewById (R.id.toolbar);
     setSupportActionBar (toolbar);
@@ -77,10 +55,33 @@ public class EventPage extends AppCompatActivity {
 
     //noinspection SimplifiableIfStatement
     if (id == R.id.action_settings) {
+      Toast.makeText (getApplicationContext (),"Empty for now",Toast.LENGTH_SHORT).show ();
       return true;
     }
 
     return super.onOptionsItemSelected(item);
   }
+  public void closeDrawer(){
+    containerView = findViewById (R.id.navigation_drawer);
+    if(drawerLayout.isDrawerOpen (containerView))
+      drawerLayout.closeDrawer (containerView);
+  }
 
+  @Override
+  public void onBackPressed () {
+    containerView = findViewById (R.id.navigation_drawer);
+    if(drawerLayout.isDrawerOpen (containerView)){
+      closeDrawer ();
+    }
+    else{
+      count = count +1;
+      if(count == 1){
+        Toast.makeText (getApplicationContext (),"Press back button again to exit",Toast.LENGTH_SHORT).show ();
+      }
+      if(count > 1){
+        finishFromChild (getParent ());
+      }
+    }
+
+  }
 }

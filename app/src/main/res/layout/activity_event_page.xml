@@ -36,7 +36,7 @@
     android:id="@+id/fragment2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:name="com.uber.executer.EventPageFragment"
+    android:name="com.uber.executer.fragments.EventPageFragment"
     tools:layout="@layout/events">
   </fragment>
 
@@ -46,6 +46,6 @@
     android:id="@+id/navigation_drawer"
     android:layout_width="280dp"
     android:layout_height="match_parent"
-    android:name="com.uber.executer.NavFragment"
+    android:name="com.uber.executer.fragments.NavFragment"
     tools:layout="@layout/navigation_layout"/>
 </android.support.v4.widget.DrawerLayout>

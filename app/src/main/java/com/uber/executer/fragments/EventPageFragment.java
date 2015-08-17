@@ -1,12 +1,11 @@
-package com.uber.executer;
+package com.uber.executer.fragments;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,28 +14,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
-import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.uber.executer.R;
+import com.uber.executer.Singletons.Vars;
+import com.uber.executer.activities.BookRide;
 import com.uber.executer.models.Calendar;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -49,6 +39,7 @@ import java.util.Locale;
 public class EventPageFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener{
   private static final String TAG = "Connect";
   String summary;
+  private IntentFilter filter;
   ListView eventList;
   String coolTime;
   String myStreet;
@@ -56,6 +47,8 @@ public class EventPageFragment extends Fragment implements GoogleApiClient.Conne
   protected LocationRequest locationRequest;
   double longitude;
   double latitude;
+
+
   @Nullable
   @Override
   public View onCreateView (final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -154,7 +147,6 @@ public class EventPageFragment extends Fragment implements GoogleApiClient.Conne
   public void onConnectionFailed (ConnectionResult connectionResult) {
     Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + connectionResult.getErrorCode());
   }
-
 
 
   public class EventAdapter extends BaseAdapter {

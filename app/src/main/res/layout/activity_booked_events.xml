@@ -2,7 +2,7 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  tools:context="com.uber.executer.BookedEvents">
+  tools:context="com.uber.executer.activities.BookedEvents">
 
   <include
     layout="@layout/toolbar"
@@ -28,5 +28,14 @@
     android:layout_alignParentRight="true"
     android:layout_alignParentEnd="true"
     android:layout_below="@+id/booked_event_title"/>
+  <TextView
+    android:textColor="#999"
+    android:id="@+id/noeventavailable"
+    android:layout_centerInParent="true"
+    android:gravity="center"
+    android:textSize="32dp"
+    android:text="No Event Available"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"/>
 
 </RelativeLayout>

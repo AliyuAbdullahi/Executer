@@ -1,10 +1,8 @@
-package com.uber.executer;
+package com.uber.executer.activities;
 
-import android.app.ActionBar;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -15,7 +13,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -28,23 +25,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
-import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.uber.executer.fragments.NavFragment;
+import com.uber.executer.R;
+import com.uber.executer.Singletons.Vars;
 import com.uber.executer.models.Calendar;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -128,9 +123,9 @@ public class BookRide extends AppCompatActivity {
     startTime = (TextView)tableLayout.findViewById (R.id.event_start_time);
     myCurrentLocation = (TextView)tableLayout.findViewById (R.id.my_current_location);
     myCurrentLocation.setText (myLocation);
-
-    startTime.setText (timing);
-
+    String[] formattedTime = timing.split (" ");
+    startTime.setText (formattedTime[0]+" "+formattedTime[1]+" "+formattedTime[2]);
+//    startTime.setText (timing);
     //set up drawer layout
     drawerLayout = (DrawerLayout)findViewById (R.id.drawerlayout);
 
@@ -172,7 +167,7 @@ public class BookRide extends AppCompatActivity {
           //get user latitude
 
           RequestQueue queue = Volley.newRequestQueue (getApplicationContext ());
-          StringRequest stringRequest = new StringRequest (Request.Method.POST, "http://andelahack.herokuapp.com/users/"+Vars.user.response.uuid+"/requests", new Response.Listener<String> () {
+          StringRequest stringRequest = new StringRequest (Request.Method.POST, "http://andelahack.herokuapp.com/users/"+ Vars.user.response.uuid+"/requests", new Response.Listener<String> () {
             @Override
             public void onResponse (String response) {
               Toast.makeText (getApplicationContext (), "Success!",Toast.LENGTH_LONG).show ();
@@ -246,6 +241,9 @@ public class BookRide extends AppCompatActivity {
         dialog.setTitle ("");
         ImageView carImage = (ImageView) dialog.findViewById (R.id.uber_black_detail_car);
         carImage.setImageResource (R.drawable.uber_black);
+        Animation animation = AnimationUtils.loadAnimation (getApplicationContext (),R.anim.abc_fade_in);
+        animation.setDuration (2000);
+        carImage.setAnimation (animation);
         TextView carTitle = (TextView) dialog.findViewById (R.id.car_title);
         carTitle.setText ("UBER BLACK");
         TextView carProperty = (TextView) dialog.findViewById (R.id.car_property);
@@ -282,6 +280,9 @@ public class BookRide extends AppCompatActivity {
         dialog.setTitle ("");
         ImageView carImage = (ImageView) dialog.findViewById (R.id.uber_black_detail_car);
         carImage.setImageResource (R.drawable.new_uber);
+        Animation animation = AnimationUtils.loadAnimation (getApplicationContext (),R.anim.abc_fade_in);
+        animation.setDuration (2000);
+        carImage.setAnimation (animation);
         TextView carTitle = (TextView) dialog.findViewById (R.id.car_title);
         carTitle.setText ("UBER X");
         TextView carProperty = (TextView) dialog.findViewById (R.id.car_property);
@@ -317,6 +318,9 @@ public class BookRide extends AppCompatActivity {
         dialog.setTitle ("");
         ImageView carImage = (ImageView) dialog.findViewById (R.id.uber_black_detail_car);
         carImage.setImageResource (R.drawable.taxi);
+        Animation animation = AnimationUtils.loadAnimation (getApplicationContext (),R.anim.abc_fade_in);
+        animation.setDuration (2000);
+        carImage.setAnimation (animation);
         TextView carTitle = (TextView) dialog.findViewById (R.id.car_title);
         carTitle.setText ("UBER TAXI");
         TextView carProperty = (TextView) dialog.findViewById (R.id.car_property);
@@ -379,6 +383,7 @@ public class BookRide extends AppCompatActivity {
 
     //noinspection SimplifiableIfStatement
     if (id == R.id.action_settings) {
+      Toast.makeText (getApplicationContext (),"Empty for now",Toast.LENGTH_SHORT).show ();
       return true;
     }
 

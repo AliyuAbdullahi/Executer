@@ -47,7 +47,7 @@
     android:textSize="16sp"
     android:layout_gravity="center_horizontal"
     android:gravity="center_horizontal"
-    android:text="Authenticate with Goolge to get your Calendar"
+    android:text="Authenticate with Google to get your Calendar"
     android:layout_height="wrap_content"
     android:layout_above="@+id/google_plus_button"
     android:layout_alignParentLeft="true"

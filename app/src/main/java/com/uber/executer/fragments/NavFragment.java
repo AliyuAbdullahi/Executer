@@ -1,4 +1,4 @@
-package com.uber.executer;
+package com.uber.executer.fragments;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -20,6 +20,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.uber.executer.R;
+import com.uber.executer.activities.BookedEvents;
+
 /**
  * Created by aliyuolalekan on 8/12/15.
  */
@@ -30,6 +33,7 @@ public class NavFragment extends Fragment {
   private static final String PREF_FILE_NAME = "myPreference" ;
   public static final String KEY_USER_LEARNED_DRAWER = "user_learned_drawer";
   public boolean fragmentIsSeen;
+  private ImageView uberhot;
   private boolean fromSavedState;
   public ActionBarDrawerToggle drawertoggle;
   private DrawerLayout drawerLayout;
@@ -75,6 +79,17 @@ public class NavFragment extends Fragment {
       }
     });
     return view;
+  }
+  public void closeDrawer(){
+    containerView = getActivity ().findViewById (R.id.navigation_drawer);
+    if(drawerLayout.isDrawerOpen (containerView))
+    drawerLayout.closeDrawer (containerView);
+  }
+  public void openDrawer(){
+    containerView = getActivity ().findViewById (R.id.navigation_drawer);
+    if(!drawerLayout.isDrawerOpen (containerView)){
+      drawerLayout.openDrawer (containerView);
+    }
   }
 
   public void setUp (int fragmentId, DrawerLayout layout) {

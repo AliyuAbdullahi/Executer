@@ -1,116 +1,176 @@
 package com.uber.executer;
 
 import android.app.Activity;
-import android.app.Dialog;
-import android.graphics.Bitmap;
-import android.support.v7.app.AppCompatActivity;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.IntentSender;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.widget.ImageButton;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import com.google.android.gms.auth.GoogleAuthException;
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.UserRecoverableAuthException;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.plus.Plus;
+import com.google.api.services.calendar.CalendarScopes;
 
-import java.util.Date;
+import java.io.IOException;
 
-public class MainActivity extends AppCompatActivity {
 
-  @Override
-  protected void onCreate (Bundle savedInstanceState) {
-    super.onCreate (savedInstanceState);
-    setContentView (R.layout.activity_main);
-  }
-  private WebView webView;
-  private Dialog authenticationDialog;
+public class MainActivity extends Activity implements
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
-  public void authDialog(View view) {
-    try {
-      if (authenticationDialog == null) {
-        authenticationDialog = new Dialog(this);
-        authenticationDialog.setCancelable(true);
-        authenticationDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        authenticationDialog.setContentView(R.layout.dialog_webview);
-      }
+    public static final int RC_GOOGLE_LOGIN = 1;
 
-      if (authenticationDialog != null) {
-        try {
-          if (!authenticationDialog.isShowing()) {
-            authenticationDialog.show();
-            uberAuth();
-          } else {
-            authenticationDialog.cancel();
-            authenticationDialog = null;
-          }
-        } catch (Exception e0) {
-          e0.printStackTrace();
-        }
+    private GoogleApiClient mGoogleApiClient;
 
-      }
-    } catch (Exception e0) {
-      e0.printStackTrace();
-    }
-  }
+    private boolean mGoogleIntentInProgress;
+    private boolean mGoogleLoginClicked;
+    private ConnectionResult mGoogleConnectionResult;
 
-  private void uberHackAuth(String string) {
-    Vars.user.response.google_token = string;
-    JsonObject user = new Gson ().toJsonTree(Vars.user).getAsJsonObject();
-    Vars.saveDB("user", user.toString(), this);
-  }
+    private ImageButton mGoogleLoginButton;
+    private String TAG = "google login";
+    private ProgressDialog mAuthProgressDialog;
 
-  private void uberAuth() {
-    final Activity self = this;
-    webView = (WebView) authenticationDialog.findViewById(R.id.authWebView);
-    webView.setWebViewClient(new WebViewClient () {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        init();
 
-      @Override
-      public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-        super.onReceivedError(view, errorCode, description, failingUrl);
-      }
-
-      @Override
-      public void onPageStarted(WebView view, String url, Bitmap favicon) {
-
-        super.onPageStarted(view, url, favicon);
-      }
-
-      @Override
-      public void onPageFinished(WebView view, String url) {
-        super.onPageFinished(view, url);
-
-        if (url.contains("/calendar")) {
-          uberHackAuth(new Date ().toString());
-          webView.loadUrl("javascript:uber.getJSONCalendarString(document.body.innerText);");
-          authenticationDialog.hide();
-        }
-      }
-    });
-    webView = Vars.popUpWebView(webView, this);
-    webView.loadUrl ("https://accounts.google.com/o/oauth2/auth?access_type=offline&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar.readonly&response_type=code&client_id=453264479059-fc56k30fdhl07leahq5n489ct7ifk7md.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fandelahack.herokuapp.com%2Fcalendar%2Fcallback");
-
-  }
-  @Override
-  public boolean onCreateOptionsMenu (Menu menu) {
-    // Inflate the menu; this adds items to the action bar if it is present.
-    getMenuInflater ().inflate (R.menu.menu_main, menu);
-    return true;
-  }
-
-  @Override
-  public boolean onOptionsItemSelected (MenuItem item) {
-    // Handle action bar item clicks here. The action bar will
-    // automatically handle clicks on the Home/Up button, so long
-    // as you specify a parent activity in AndroidManifest.xml.
-    int id = item.getItemId ();
-
-    //noinspection SimplifiableIfStatement
-    if (id == R.id.action_settings) {
-      return true;
     }
 
-    return super.onOptionsItemSelected (item);
-  }
+    private void init() {
+        mAuthProgressDialog = new ProgressDialog(this);
+        mAuthProgressDialog.setMessage("Loading...");
+        mAuthProgressDialog.setCancelable(false);
+
+        mGoogleLoginButton = (ImageButton) findViewById(R.id.google_plus_button);
+        mGoogleLoginButton.setOnClickListener(this);
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(Plus.API)
+                .addScope(Plus.SCOPE_PLUS_LOGIN)
+                .build();
+    }
+
+    private void resolveSignInError() {
+        if (mGoogleConnectionResult.hasResolution()) {
+            try {
+                mGoogleIntentInProgress = true;
+                mGoogleConnectionResult.startResolutionForResult(this, RC_GOOGLE_LOGIN);
+            } catch (IntentSender.SendIntentException e) {
+                mGoogleIntentInProgress = false;
+                mGoogleApiClient.connect();
+            }
+        }
+    }
+
+    private void loginAndGetToken() {
+        mAuthProgressDialog.show();
+        AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
+            String errorMessage = null;
+
+            @Override
+            protected String doInBackground(Void... params) {
+                String token = null;
+
+                try {
+                    String scope = String.format("oauth2:%s", CalendarScopes.CALENDAR_READONLY);
+                    token = GoogleAuthUtil.getToken(MainActivity.this, Plus.AccountApi.getAccountName(mGoogleApiClient), scope);
+                } catch (IOException transientEx) {
+                    Log.e(TAG, "Error authenticating with Google: " + transientEx);
+                    errorMessage = "Network error: " + transientEx.getMessage();
+                } catch (UserRecoverableAuthException e) {
+                    Log.w(TAG, "Recoverable Google OAuth error: " + e.toString());
+                    /* We probably need to ask for permissions, so start the intent if there is none pending */
+                    if (!mGoogleIntentInProgress) {
+                        mGoogleIntentInProgress = true;
+                        Intent recover = e.getIntent();
+                        startActivityForResult(recover, RC_GOOGLE_LOGIN);
+                    }
+                } catch (GoogleAuthException authEx) {
+                    Log.e(TAG, "Error authenticating with Google: " + authEx.getMessage(), authEx);
+                    errorMessage = "Error authenticating with Google: " + authEx.getMessage();
+                }
+                return token;
+            }
+
+            @Override
+            protected void onPostExecute(String token) {
+                mGoogleLoginClicked = false;
+                mAuthProgressDialog.hide();
+                if (token != null) {
+                    Log.v("token", token);
+
+                } else if (errorMessage != null) {
+
+                }
+            }
+        };
+        task.execute();
+    }
+
+
+    @Override
+    public void onConnected(final Bundle bundle) {
+        loginAndGetToken();
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+            /* Store the ConnectionResult so that we can use it later when the user clicks on the Google+ login button */
+        mGoogleConnectionResult = result;
+
+        if (mGoogleLoginClicked) {
+            resolveSignInError();
+        } else {
+            Log.e(TAG, result.toString());
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        // ignore
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != RESULT_OK) {
+            mGoogleLoginClicked = false;
+        }
+        mGoogleIntentInProgress = false;
+        if(data != null)
+        System.out.println("data" + data);
+
+        if (!mGoogleApiClient.isConnecting()) {
+            mGoogleApiClient.connect();
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.google_plus_button:
+                mGoogleLoginClicked = true;
+                if (!mGoogleApiClient.isConnecting()) {
+                    if (mGoogleConnectionResult != null) {
+                        resolveSignInError();
+                    } else if (mGoogleApiClient.isConnected()) {
+                        loginAndGetToken();
+                    } else {
+                        Log.d(TAG, "Trying to connect to Google API");
+                        mGoogleApiClient.connect();
+                    }
+                }
+                break;
+        }
+    }
 }

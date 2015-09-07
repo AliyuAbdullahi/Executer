@@ -53,7 +53,6 @@
     android:layout_width="wrap_content"
     android:src="@drawable/sync"
     android:background="@null"
-    android:onClick="authDialog"
     android:layout_gravity="center_horizontal"
     android:id="@+id/google_plus_button"
     android:layout_height="wrap_content"

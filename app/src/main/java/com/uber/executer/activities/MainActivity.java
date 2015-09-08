@@ -87,6 +87,7 @@ public class MainActivity extends Activity implements
         try {
           String scope = String.format("oauth2:%s", CalendarScopes.CALENDAR_READONLY);
           token = GoogleAuthUtil.getToken (MainActivity.this, Plus.AccountApi.getAccountName (mGoogleApiClient), scope);
+          Log.e("Token:", token);
         } catch (IOException transientEx) {
           Log.e(TAG, "Error authenticating with Google: " + transientEx);
           errorMessage = "Network error: " + transientEx.getMessage();

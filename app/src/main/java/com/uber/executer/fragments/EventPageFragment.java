@@ -67,7 +67,7 @@ public class EventPageFragment extends Fragment implements GoogleApiClient.Conne
     else
       Toast.makeText(getActivity (), "GPS is enabled!", Toast.LENGTH_LONG).show();
     eventList = (ListView)view. findViewById(R.id.events);
-    eventList.setAdapter (new EventAdapter (getActivity (), Vars.calendars));
+    //eventList.setAdapter (new EventAdapter (getActivity (), Vars.calendars));
     eventList.setOnItemClickListener (new AdapterView.OnItemClickListener () {
       @Override
       public void onItemClick (AdapterView<?> parent, View view, int position, long id) {

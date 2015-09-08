@@ -41,7 +41,7 @@ public class JavaScriptInterface {
     @JavascriptInterface
     public void getJSONCalendarString(final String json) {
 
-        Vars.calendars = new Gson().fromJson(json, Calendar[].class);
+       // Vars.calendars = new Gson().fromJson(json, Calendar[].class);
         new Vars.MakeHTTPRequest(mc, "user/" + Vars.user.response.uuid + "/calendar", new String[]{"calendar"}, new String[]
                 {json}, Vars
                 .POST) {

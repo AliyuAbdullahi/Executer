@@ -51,6 +51,7 @@ import java.util.Date;
 
 
 public class Vars {
+
     public enum HttpMethods {
         GET, POST, PUT, DELETE
     }
@@ -94,7 +95,7 @@ public class Vars {
     public static final String KEY_LNG = "longitude";
     public static final String KEY_EMAIL_NOTIFY = "email_notify";
     public static final String KEY_NOTIFICATIONS = "notifications";
-    public static Calendar[] calendars;
+    public static java.util.Calendar[] calendars;
     public static final String KEY_LAT = "latitude";
     //  public static final String KEY_LOCATION_MAP = "location_map";
 
@@ -136,7 +137,7 @@ public class Vars {
 
         card_duration = card_duration * 86400;
         int expiration = modified_at + card_duration;
-        double result = (new Date()).getTime() / 1000;
+        double result = (new Date ()).getTime() / 1000;
         return expiration - Math.round(result);
     }
 
@@ -189,12 +190,34 @@ public class Vars {
         return  date;
     }
 
+
+
+
+//    public static AutoSpanRecyclerView recyclerView = null;
+//
+//    public static void PopulateOfferList(final Activity activity, final View view, final com.trivoda.jara.model.Offer[] offers, final int recyclerViewId) {
+//        activity.runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                if (offers == null || offers.length == 0) {
+//                    Vars.showCenterMessage(activity, view, R.id.mainView, activity.getString(R.string.no_content) + " " + activity.getString(R.string.title_offers).toLowerCase(), null);
+//                } else {
+//                    recyclerView = (AutoSpanRecyclerView) view.findViewById(recyclerViewId);
+//                    recyclerView.setHasFixedSize(true);
+//                    recyclerView.setLayoutManager(new GridLayoutManager(activity, 2));
+//                    recyclerView.setAdapter(new OfferAdapter(offers, activity));
+//                }
+//            }
+//        });
+//    }
+
+
     public static void ShowNativeMessage(final Activity activity, final String msg, final String title, final DialogInterface.OnClickListener positiveClick) {
         activity.runOnUiThread(new Runnable() {
 
             @Override
             public void run() {
-                Builder dg = new AlertDialog.Builder(activity);
+                AlertDialog.Builder dg = new AlertDialog.Builder (activity);
                 dg.setIcon(R.mipmap.ic_launcher).setTitle(title != null ? title : activity.getString(R.string.app_name))
                         .setMessage(msg).setCancelable(true).setPositiveButton("Retry", positiveClick)
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -251,7 +274,7 @@ public class Vars {
         String sharedKey = "app_first_launch";
         if (isOld) {
             SharedPreferences sp = PreferenceManager
-                    .getDefaultSharedPreferences(activity);
+                    .getDefaultSharedPreferences (activity);
             sp.edit().putBoolean(sharedKey, true).apply();
             return true;
         }
@@ -269,7 +292,7 @@ public class Vars {
     }
 
     public static WebView popUpWebView(WebView webView, Activity self) {
-        webView.setWebChromeClient(new WebChromeClient() {
+        webView.setWebChromeClient(new WebChromeClient () {
             @Override
             public void onProgressChanged(WebView view, int progress) {
 
@@ -308,7 +331,7 @@ public class Vars {
         webView.getSettings().setDatabaseEnabled(true);
         webView.getSettings().setGeolocationEnabled(true);
 
-        webView.addJavascriptInterface(new JavaScriptInterface (self,webView),"uber");
+        webView.addJavascriptInterface(new JavaScriptInterface(self,webView),"uber");
         webView.requestFocus(View.FOCUS_DOWN);
         webView.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
@@ -355,30 +378,29 @@ public class Vars {
         context.getSharedPreferences(myPrefs, Activity.MODE_PRIVATE).edit().clear().apply();
     }
 
-    public static abstract class GetBitmapFromURL {
-
-        public GetBitmapFromURL(String bitmapURL, final Context context) {
-            final Target target = new Target() {
-                @Override
-                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                    done(bitmap);
-                }
-
-                @Override
-                public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                }
-
-                @Override
-                public void onBitmapFailed(Drawable errorDrawable) {
-                    //done(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_plusone_small_off_client));
-                }
-            };
-            Picasso.with(context).load(bitmapURL).centerInside().into(target);
-        }
-
-        protected abstract void done(Bitmap bitmap);
-    }
+//    public static abstract class GetBitmapFromURL {
+//
+//        public GetBitmapFromURL(String bitmapURL, final Context context) {
+//            final java.lang.annotation.Target target = new java.lang.annotation.Target () {
+//
+//                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+//                    done(bitmap);
+//                }
+//
+//
+//                public void onPrepareLoad(Drawable placeHolderDrawable) {
+//
+//                }
+//
+//                public void onBitmapFailed(Drawable errorDrawable) {
+//                    //done(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_plusone_small_off_client));
+//                }
+//            };
+//            Picasso.with(context).load(bitmapURL).centerInside().into(target);
+//        }
+//
+//        protected abstract void done(Bitmap bitmap);
+//    }
 
     public static void Toaster(final String msg, final Activity activity, int duration) {
         final int toastDuration = duration == 0 ? Toast.LENGTH_LONG : duration;
@@ -462,13 +484,13 @@ public class Vars {
                 @Override
                 public void run() {
                     try {
-                        final Object[] result = HttpRequest(apiRoute, keys, values, HttpMethods.values()[method - 1], activity);
+                        final Object[] result = HttpRequest(apiRoute, keys, values, HttpMethods.values ()[method - 1], activity);
                         if ((Boolean) result[1]) {
                             //Vars.isCenterLoading(activity, view, false, viewId);
                             done(result[0].toString());
                             done(getInt(result[2]), result[0].toString());
                         } else {
-                            Log.e("Error String", result[0].toString() + "-" + result[1].toString() + "-" + result[2].toString());
+                            Log.e ("Error String", result[0].toString () + "-" + result[1].toString () + "-" + result[2].toString ());
                             error(getInt(result[2]), result[0].toString(), viewId);
                         }
                     } catch (IllegalArgumentException iae) {
@@ -558,7 +580,7 @@ public class Vars {
             }
             responseCode = con.getResponseCode();
             complete = responseCode >= 200 && responseCode <= 206;
-            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            BufferedReader in = new BufferedReader(new InputStreamReader (con.getInputStream()));
             String inputLine;
 
             while ((inputLine = in.readLine()) != null) {
@@ -582,4 +604,5 @@ public class Vars {
                 responseCode
         };
     }
+
 }

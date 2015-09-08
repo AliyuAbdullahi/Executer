@@ -136,7 +136,6 @@ public class LoginActivity extends AppCompatActivity {
     });
     webView = Vars.popUpWebView(webView, this);
     webView.loadUrl ("https://login.uber.com/oauth/authorize?response_type=code&redirect_uri=https%3A%2F%2Fandelahack.herokuapp.com%2Fuber%2Fcallback&scope=profile&client_id=rr2NzvHi69QJalUHz0ImU1KidoE1KGc5");
-
   }
   public boolean isOnline() {
     ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);

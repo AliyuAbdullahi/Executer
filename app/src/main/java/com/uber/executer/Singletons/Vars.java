@@ -189,28 +189,6 @@ public class Vars {
         return  date;
     }
 
-
-
-
-//    public static AutoSpanRecyclerView recyclerView = null;
-//
-//    public static void PopulateOfferList(final Activity activity, final View view, final com.trivoda.jara.model.Offer[] offers, final int recyclerViewId) {
-//        activity.runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                if (offers == null || offers.length == 0) {
-//                    Vars.showCenterMessage(activity, view, R.id.mainView, activity.getString(R.string.no_content) + " " + activity.getString(R.string.title_offers).toLowerCase(), null);
-//                } else {
-//                    recyclerView = (AutoSpanRecyclerView) view.findViewById(recyclerViewId);
-//                    recyclerView.setHasFixedSize(true);
-//                    recyclerView.setLayoutManager(new GridLayoutManager(activity, 2));
-//                    recyclerView.setAdapter(new OfferAdapter(offers, activity));
-//                }
-//            }
-//        });
-//    }
-
-
     public static void ShowNativeMessage(final Activity activity, final String msg, final String title, final DialogInterface.OnClickListener positiveClick) {
         activity.runOnUiThread(new Runnable() {
 

@@ -6,6 +6,7 @@ import android.content.IntentFilter;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -54,6 +56,16 @@ public class EventPageFragment extends Fragment implements GoogleApiClient.Conne
   public View onCreateView (final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     super.onCreateView (inflater, container, savedInstanceState);
     View view = inflater.inflate (R.layout.events, container, false);
+
+    final LocationManager manager = (LocationManager)getActivity ().getSystemService (Context.LOCATION_SERVICE);
+
+    if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ){
+      Toast.makeText(getActivity (), "GPS is disabled!", Toast.LENGTH_LONG).show();
+      startActivity (new Intent (android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+      Toast.makeText (getActivity (),"Turn on GPS",Toast.LENGTH_SHORT).show ();
+    }
+    else
+      Toast.makeText(getActivity (), "GPS is enabled!", Toast.LENGTH_LONG).show();
     eventList = (ListView)view. findViewById(R.id.events);
     eventList.setAdapter (new EventAdapter (getActivity (), Vars.calendars));
     eventList.setOnItemClickListener (new AdapterView.OnItemClickListener () {

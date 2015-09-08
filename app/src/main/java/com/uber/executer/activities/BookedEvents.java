@@ -68,7 +68,6 @@ public class BookedEvents extends AppCompatActivity {
     final StringRequest request = new StringRequest (Request.Method.GET,
             "http://andelahack.herokuapp.com/users/"+ Vars.user.response.uuid+"/requests",
             new Response.Listener<String> () {
-
               @Override
               public void onResponse (String response) {
                 try {

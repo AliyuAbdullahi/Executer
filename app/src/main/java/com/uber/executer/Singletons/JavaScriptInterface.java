@@ -2,6 +2,7 @@ package com.uber.executer.Singletons;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.widget.Toast;
@@ -49,6 +50,7 @@ public class JavaScriptInterface {
                 super.done(result);
                 if (Vars.calendars.length > -1) {
                     Vars.saveDB("calendar", json, mc);
+                    Log.v ("result",json.toString ());
                     mc.finish();
                     mc.startActivity(new Intent(mc, EventPage.class));
                 }
@@ -66,4 +68,5 @@ public class JavaScriptInterface {
         };
 
     }
+
 }

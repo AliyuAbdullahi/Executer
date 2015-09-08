@@ -104,6 +104,7 @@ public class LoginActivity extends AppCompatActivity {
   private void uberHackAuth(String url) {
     Uri uri = Uri.parse(url);
     String code = uri.getQueryParameter("code");
+    Vars.Toaster("Auth code:" + code, this, 0);
   }
 
   private void uberAuth() {
@@ -125,7 +126,7 @@ public class LoginActivity extends AppCompatActivity {
       @Override
       public void onPageFinished(WebView view, String url) {
         super.onPageFinished(view, url);
-        Vars.Toaster("done", self, 0);
+        Vars.Toaster(url, self, 0);
         if (url.contains("code=")) {
           webView.loadUrl("javascript:uber.getJSONString(document.body.innerText);");
           authenticationDialog.hide();

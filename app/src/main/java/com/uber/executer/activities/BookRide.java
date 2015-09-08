@@ -1,6 +1,9 @@
 package com.uber.executer.activities;
 
+import android.app.AlarmManager;
 import android.app.Dialog;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -35,6 +38,7 @@ import com.uber.executer.fragments.NavFragment;
 import com.uber.executer.R;
 import com.uber.executer.Singletons.Vars;
 import com.uber.executer.models.Calendar;
+import com.uber.executer.services.AlarmReciever;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -55,9 +59,9 @@ public class BookRide extends AppCompatActivity {
   JSONObject locationObject;
   String pickup;
   Dialog dialog;
-  static final String UBER_BLACK = "UBER BLACK";
-  static final String UBER_X = "UBER X";
-  static final String UBER_TAXI = "UBER TAXI";
+  static final String UBER_BLACK = "UberBLACK";
+  static final String UBER_X = "uberX";
+  static final String UBER_TAXI = "UberSUV";
   LinearLayout cars;
   EditText destination;
   Toolbar toolbar;
@@ -69,6 +73,7 @@ public class BookRide extends AppCompatActivity {
   ImageView uberBlack;
   ImageView ubertaxi;
   TextView carType;
+  NotificationManager manager;
   Animation animation;
   @Override
   protected void onCreate (Bundle savedInstanceState) {
@@ -78,6 +83,9 @@ public class BookRide extends AppCompatActivity {
     setContentView (R.layout.activity_book_ride);
     //prevent editText from gaining focus on lunch of activity
 //    getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+    manager = (NotificationManager)getSystemService (Context.NOTIFICATION_SERVICE);
+
 
     //set up toolbar
     toolbar = (Toolbar)findViewById (R.id.toolbar);
@@ -140,12 +148,14 @@ public class BookRide extends AppCompatActivity {
     bookARide.setOnClickListener (new View.OnClickListener () {
       @Override
       public void onClick (View v) {
+
+
+
         if(isOnline ()){
           try{
             locationObject = new JSONObject ();
-            locationObject.put ("longitude",longitude);
-            locationObject.put("latitude",latitude);
-            locationObject.put("address",myLocation);
+            locationObject.put ("latitude",longitude);
+            locationObject.put("longitude",latitude);
           }
           catch(JSONException e){
             e.printStackTrace ();
@@ -170,7 +180,26 @@ public class BookRide extends AppCompatActivity {
           StringRequest stringRequest = new StringRequest (Request.Method.POST, "http://andelahack.herokuapp.com/users/"+ Vars.user.response.uuid+"/requests", new Response.Listener<String> () {
             @Override
             public void onResponse (String response) {
-              Toast.makeText (getApplicationContext (), "Success!",Toast.LENGTH_LONG).show ();
+              Toast.makeText (getApplicationContext (), response,Toast.LENGTH_LONG).show ();
+
+
+              Intent myIntent = new Intent(BookRide.this, AlarmReciever.class);
+
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(BookRide.this,
+                    0, myIntent, 0);
+
+            AlarmManager alarmManager = (AlarmManager)getApplicationContext (). getSystemService (Context.ALARM_SERVICE);
+
+            /*
+             * The following sets the Alarm in the specific time by getting the long
+             * value of the alarm date time which is in calendar object by calling
+             * the getTimeInMillis(). Since Alarm supports only long value , we're
+             * using this method.
+             */
+
+            alarmManager.set (AlarmManager.RTC, System.currentTimeMillis (),
+                    pendingIntent);
+
 
             }
           }, new Response.ErrorListener () {
@@ -183,13 +212,10 @@ public class BookRide extends AppCompatActivity {
             protected Map<String, String> getParams () throws AuthFailureError {
               super.getParams ();
               Map<String,String> params = new HashMap<String, String> ();
-              params.put("uberType",car);
-              params.put("location", locationObject.toString ());
-              params.put ("destination", myDestination);
-              params.put("pickUpLocation", pickup);
-              params.put("summary",summary);
+              params.put("destination",location);
               params.put("startTime",timing);
-
+              params.put("productType",car);
+              params.put("location", locationObject.toString ());
 
               return params;
 
@@ -322,7 +348,7 @@ public class BookRide extends AppCompatActivity {
         animation.setDuration (2000);
         carImage.setAnimation (animation);
         TextView carTitle = (TextView) dialog.findViewById (R.id.car_title);
-        carTitle.setText ("UBER TAXI");
+        carTitle.setText ("UBER SUV");
         TextView carProperty = (TextView) dialog.findViewById (R.id.car_property);
         carProperty.setText (R.string.uber_taxi_details);
         Button gotIt = (Button) dialog.findViewById (R.id.gotit);

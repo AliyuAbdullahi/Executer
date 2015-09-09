@@ -25,7 +25,7 @@ public class EventPage extends AppCompatActivity {
     super.onCreate (savedInstanceState);
     count = 0;
     setContentView (R.layout.activity_event_page);
-    Toast.makeText (getApplicationContext (), Vars.user.response.google_token.toString (),Toast.LENGTH_LONG).show ();
+  //  Toast.makeText (getApplicationContext (), Vars.user.response.google_token.toString (),Toast.LENGTH_LONG).show ();
     toolbar = (Toolbar)findViewById (R.id.toolbar);
     setSupportActionBar (toolbar);
     TextView mTitle = (TextView) toolbar.findViewById(R.id.toolbar_title);

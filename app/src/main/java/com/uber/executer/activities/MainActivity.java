@@ -124,11 +124,13 @@ public class MainActivity extends Activity implements
 
   @Override
   public void onConnected(final Bundle bundle) {
+    Log.e("Here", "things get connected");
     loginAndGetToken();
   }
 
   @Override
   public void onConnectionFailed(ConnectionResult result) {
+    Log.e("Executer", "Failed to connect");
             /* Store the ConnectionResult so that we can use it later when the user clicks on the Google+ login button */
     mGoogleConnectionResult = result;
 
@@ -167,9 +169,10 @@ public class MainActivity extends Activity implements
           if (mGoogleConnectionResult != null) {
             resolveSignInError();
           } else if (mGoogleApiClient.isConnected()) {
+
             loginAndGetToken();
           } else {
-            Log.d(TAG, "Trying to connect to Google API");
+
             mGoogleApiClient.connect();
           }
         }

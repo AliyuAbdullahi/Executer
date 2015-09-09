@@ -59,13 +59,13 @@ public class EventPageFragment extends Fragment implements GoogleApiClient.Conne
 
     final LocationManager manager = (LocationManager)getActivity ().getSystemService (Context.LOCATION_SERVICE);
 
-    if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ){
-      Toast.makeText(getActivity (), "GPS is disabled!", Toast.LENGTH_LONG).show();
-      startActivity (new Intent (android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-      Toast.makeText (getActivity (),"Turn on GPS",Toast.LENGTH_SHORT).show ();
-    }
-    else
-      Toast.makeText(getActivity (), "GPS is enabled!", Toast.LENGTH_LONG).show();
+//    if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ){
+//      Toast.makeText(getActivity (), "GPS is disabled!", Toast.LENGTH_LONG).show();
+//      startActivity (new Intent (android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+//      Toast.makeText (getActivity (),"Turn on GPS",Toast.LENGTH_SHORT).show ();
+//    }
+//    else
+//      Toast.makeText(getActivity (), "GPS is enabled!", Toast.LENGTH_LONG).show();
     eventList = (ListView)view. findViewById(R.id.events);
     //eventList.setAdapter (new EventAdapter (getActivity (), Vars.calendars));
     eventList.setOnItemClickListener (new AdapterView.OnItemClickListener () {

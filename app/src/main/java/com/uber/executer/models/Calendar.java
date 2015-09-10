@@ -2,6 +2,8 @@ package com.uber.executer.models;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+
 /**
  * Created by goodson on 7/8/15.
  */
@@ -41,4 +43,5 @@ public class Calendar {
     public String getSummary () {
         return summary;
     }
+
 }

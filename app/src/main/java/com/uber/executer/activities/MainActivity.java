@@ -9,8 +9,18 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
@@ -18,19 +28,34 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 import com.google.api.services.calendar.CalendarScopes;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.uber.executer.R;
+import com.uber.executer.Singletons.Vars;
+import com.uber.executer.models.Calendar;
+import com.uber.executer.models.User;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class MainActivity extends Activity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
+  Calendar calendar;
 
   public static final int RC_GOOGLE_LOGIN = 1;
 
   private GoogleApiClient mGoogleApiClient;
-
+  public  static Calendar[] calendars;
   private boolean mGoogleIntentInProgress;
   private boolean mGoogleLoginClicked;
   private ConnectionResult mGoogleConnectionResult;
@@ -56,11 +81,11 @@ public class MainActivity extends Activity implements
     mGoogleLoginButton.setOnClickListener(this);
 
     mGoogleApiClient = new GoogleApiClient.Builder(this)
-            .addConnectionCallbacks(this)
-            .addOnConnectionFailedListener(this)
-            .addApi(Plus.API)
-            .addScope(Plus.SCOPE_PLUS_LOGIN)
-            .build();
+            .addConnectionCallbacks (this)
+            .addOnConnectionFailedListener (this)
+            .addApi (Plus.API)
+            .addScope (Plus.SCOPE_PLUS_LOGIN)
+            .build ();
   }
 
   private void resolveSignInError() {
@@ -76,7 +101,7 @@ public class MainActivity extends Activity implements
   }
 
   private void loginAndGetToken() {
-    mAuthProgressDialog.show();
+    mAuthProgressDialog.show ();
     AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
       String errorMessage = null;
 
@@ -87,7 +112,6 @@ public class MainActivity extends Activity implements
         try {
           String scope = String.format("oauth2:%s", CalendarScopes.CALENDAR_READONLY);
           token = GoogleAuthUtil.getToken (MainActivity.this, Plus.AccountApi.getAccountName (mGoogleApiClient), scope);
-          Log.e("Token:", token);
         } catch (IOException transientEx) {
           Log.e(TAG, "Error authenticating with Google: " + transientEx);
           errorMessage = "Network error: " + transientEx.getMessage();
@@ -107,12 +131,61 @@ public class MainActivity extends Activity implements
       }
 
       @Override
-      protected void onPostExecute(String token) {
+      protected void onPostExecute(final String token) {
         mGoogleLoginClicked = false;
         mAuthProgressDialog.hide();
         if (token != null) {
           Log.v("token", token);
+          RequestQueue queue = Volley.newRequestQueue (MainActivity.this);
+          final StringRequest request = new StringRequest (Request.Method.POST, "http://andelahack.herokuapp.com/"+Vars.user.response.uuid+"/calendar/ ", new Response.Listener<String> () {
+            @Override
+            public void onResponse (String response) {
 
+              try {
+                JSONObject result = new JSONObject (response);
+                JSONArray resultValues = result.getJSONArray ("response");
+                GsonBuilder gsonBuilder = new GsonBuilder();
+                Gson gson = gsonBuilder.create();
+                calendars = gson.fromJson (String.valueOf (resultValues), Calendar[].class);
+                Intent intent = new Intent (MainActivity.this, EventPage.class);
+                startActivity (intent);
+                overridePendingTransition( R.anim.slide_in_right,R.anim.slide_out_left);
+              } catch (JSONException e) {
+                e.printStackTrace ();
+              }
+
+            }
+          }, new Response.ErrorListener () {
+            @Override
+            public void onErrorResponse (VolleyError error) {
+              Toast.makeText (getApplicationContext (), error+"",Toast.LENGTH_LONG).show ();
+
+            }
+          }){
+            @Override
+            protected Map<String, String> getParams () throws AuthFailureError {
+              super.getParams ();
+              Map<String,String> params = new HashMap<String, String> ();
+              params.put("refreshToken","");
+              params.put("accessToken",token);
+              return params;
+
+            }
+
+            @Override
+            public Map<String, String> getHeaders () throws AuthFailureError {
+              super.getHeaders ();
+              Map<String,String> params = new HashMap<String, String>();
+              params.put("Content-Type","application/x-www-form-urlencoded");
+              return params;
+            }
+          };
+
+          int socketTimeout = 30000;//30 seconds - change to what you want
+          RetryPolicy policy = new DefaultRetryPolicy (socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+          request.setRetryPolicy(policy);
+
+          queue.add (request);
         } else if (errorMessage != null) {
 
         }
@@ -124,13 +197,11 @@ public class MainActivity extends Activity implements
 
   @Override
   public void onConnected(final Bundle bundle) {
-    Log.e("Here", "things get connected");
     loginAndGetToken();
   }
 
   @Override
   public void onConnectionFailed(ConnectionResult result) {
-    Log.e("Executer", "Failed to connect");
             /* Store the ConnectionResult so that we can use it later when the user clicks on the Google+ login button */
     mGoogleConnectionResult = result;
 
@@ -169,10 +240,9 @@ public class MainActivity extends Activity implements
           if (mGoogleConnectionResult != null) {
             resolveSignInError();
           } else if (mGoogleApiClient.isConnected()) {
-
             loginAndGetToken();
           } else {
-
+            Log.d(TAG, "Trying to connect to Google API");
             mGoogleApiClient.connect();
           }
         }

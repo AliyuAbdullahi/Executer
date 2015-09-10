@@ -30,7 +30,7 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.uber.executer.R;
-import com.uber.executer.models.Calendar;
+
 import com.uber.executer.models.User;
 
 import org.json.JSONException;

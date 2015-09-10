@@ -28,6 +28,7 @@ import com.google.android.gms.location.LocationServices;
 import com.uber.executer.R;
 import com.uber.executer.Singletons.Vars;
 import com.uber.executer.activities.BookRide;
+import com.uber.executer.activities.MainActivity;
 import com.uber.executer.models.Calendar;
 
 import java.io.IOException;
@@ -49,6 +50,7 @@ public class EventPageFragment extends Fragment implements GoogleApiClient.Conne
   protected LocationRequest locationRequest;
   double longitude;
   double latitude;
+  Calendar[] calendars = MainActivity.calendars;
 
 
   @Nullable
@@ -67,7 +69,7 @@ public class EventPageFragment extends Fragment implements GoogleApiClient.Conne
 //    else
 //      Toast.makeText(getActivity (), "GPS is enabled!", Toast.LENGTH_LONG).show();
     eventList = (ListView)view. findViewById(R.id.events);
-    //eventList.setAdapter (new EventAdapter (getActivity (), Vars.calendars));
+    eventList.setAdapter (new EventAdapter (getActivity (), calendars));
     eventList.setOnItemClickListener (new AdapterView.OnItemClickListener () {
       @Override
       public void onItemClick (AdapterView<?> parent, View view, int position, long id) {

@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -127,6 +128,9 @@ public class BookRide extends AppCompatActivity {
     for(String item: getResources ().getStringArray (R.array.taxies)){
       list.add(item);
     }
+//    ArrayAdapter<CharSequence> adapters = ArrayAdapter.createFromResource (this, R.array.taxies, R.layout.simple_spinner_dropdown_item);
+//    adapters.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+//    spinnerForUberType.setAdapter (adapters);
     adapter = new ArrayAdapter<String>(getApplicationContext(),
             android.R.layout.simple_spinner_item, list);
     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -229,8 +233,8 @@ public class BookRide extends AppCompatActivity {
   }
   public void initField(){
     eventTitle = (TextView)findViewById (R.id.titleOfEvent);
-    startTimeValueOfEvent = (TextView)findViewById (R.id.startTimeOfEvent);
-    endTimeValueOfEvent = (TextView)findViewById (R.id.endTimeOfEvent);
+    startTimeValueOfEvent = (TextView)findViewById (R.id.startTimeValueofEvent);
+    endTimeValueOfEvent = (TextView)findViewById (R.id.endTimeValueOfEvent);
     pickUpLocation = (EditText)findViewById (R.id.pick_up_location);
     eventDestination = (EditText)findViewById (R.id.event_destination_);
     bookARide = (Button)findViewById (R.id.bookeRideNow);

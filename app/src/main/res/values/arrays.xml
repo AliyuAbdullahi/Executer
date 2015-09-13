@@ -5,4 +5,9 @@
         <item>UberBLACK</item>
         <item>UberSUV</item>
     </string-array>
+    <string-array name="babies">
+        <item>baby a</item>
+        <item>baby b</item>
+        <item>baby c</item>
+    </string-array>
 </resources>

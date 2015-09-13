@@ -19,6 +19,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.uber.executer.R;
+import com.uber.executer.activities.EventPage;
 
 /**
  * Created by aliyuolalekan on 8/12/15.
@@ -70,7 +71,7 @@ public class NavFragment extends Fragment {
        String itemElement = (String)listView.getItemAtPosition (position);
         switch (itemElement){
           case "Booked Events":
-            Intent intent = new Intent (getActivity (), BookedEvents.class);
+            Intent intent = new Intent (getActivity (), EventPage.class);
             startActivity (intent);
         }
       }

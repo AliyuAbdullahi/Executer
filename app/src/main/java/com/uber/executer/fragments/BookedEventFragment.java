@@ -7,6 +7,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,9 +25,13 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.uber.executer.R;
 import com.uber.executer.Singletons.Vars;
 import com.uber.executer.models.BookedEventData;
+import com.uber.executer.models.Calendar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,25 +43,24 @@ import java.util.ArrayList;
  * Created by aliyuolalekan on 9/12/15.
  */
 public class BookedEventFragment extends Fragment {
-  ArrayList<EventBooked> eventBookedArrayList;
+  EventBooked eventBooked;
+  ArrayList<EventBooked> eventBookedArrayList = new ArrayList<EventBooked> ();
   ArrayAdapter<String> adapter;
   Dialog dialog;
-  private ArrayList<String> bookedEvents = new ArrayList<String> ();
-  ListView listView;
+  ArrayList<String> bookedEventss = new ArrayList<String> ();
+  ArrayList<String> summary;
+  ListView bookedEventList;
   TextView noevent;
+  BookedEventData[] bookedEvents;
 
   @Nullable
   @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     super.onCreateView (inflater, container, savedInstanceState);
-    View view = inflater.inflate (R.layout.trip_detail_fragment_layout, container, false);
-    setUp (view);
-    return view;
-  }
-
-  public void setUp (View view) {
-    listView = (ListView) view.findViewById (R.id.events);
-
+    View view = inflater.inflate (R.layout.booked_events_new_layout, container, false);
+    final String[] dataSet = new String[]{"monday", "tuesday", "wednesday"};
+    bookedEventList = (ListView) view.findViewById (R.id.listOfItemsBooked);
+    bookedEventList.setAdapter (new ArrayAdapter<String> (getActivity (),R.layout.booked_event_listview_adapter,R.id.event_summary,dataSet));
     RequestQueue queue = Volley.newRequestQueue (getActivity ());
     final StringRequest request = new StringRequest (Request.Method.GET,
             "http://andelahack.herokuapp.com/users/" + Vars.user.response.uuid + "/requests",
@@ -65,70 +69,33 @@ public class BookedEventFragment extends Fragment {
               public void onResponse (String response) {
                 try {
                   JSONObject result = new JSONObject (response);
-                  final JSONArray array = result.getJSONArray ("response");
-                  for (int i = 0; i < array.length (); i++) {
-
-
+                  JSONArray resultValues = result.getJSONArray ("response");
+                  for( int i = 0; i< resultValues.length (); i++){
+                    JSONObject currentObject = resultValues.getJSONObject (i);
+                    JSONObject destination = currentObject.getJSONObject ("destination");
+                    Log.e ("destination", destination.getString ("address"));
+                    bookedEventss.add (destination.getString ("address"));
+                    eventBooked = new EventBooked ();
+                    eventBooked.summary = destination.getString ("address");
+                    eventBooked.starts = currentObject.getString ("startTime");
+                    eventBookedArrayList.add (eventBooked);
                   }
-                  //  adapter = new ArrayAdapter<String> (getActivity (), R.layout.booked_event_listview_adapter, R.id.event_summary, bookedEvents);
-                 MyNewAdapter newAdapter = new MyNewAdapter (getActivity (), eventBookedArrayList);
-                  if (listView == null)
-                    noevent.setVisibility (View.VISIBLE);
-                  listView.setAdapter (newAdapter);
-                  listView.setOnItemClickListener (new AdapterView.OnItemClickListener () {
-                    @Override
-                    public void onItemClick (AdapterView<?> parent, View view, final int position, final long id) {
+                  MyNewAdapter adapterNew = new MyNewAdapter (getActivity (), eventBookedArrayList);
+                  bookedEventList.setAdapter (adapterNew);
+                 // bookedEventList.setAdapter (new ArrayAdapter<String> (getActivity (), R.layout.booked_event_listview_adapter, R.id.event_summary, bookedEventss));
 
-                      dialog = new Dialog (getActivity ());
-                      dialog.setContentView (R.layout.dialog_delete_item);
-                      dialog.setTitle (bookedEvents.get (position));
-                      Button delete = (Button) dialog.findViewById (R.id.delete_booked_event);
-                      TextView timeRciept = (TextView) dialog.findViewById (R.id.time_reciept);
-
-                      Button ok = (Button) dialog.findViewById (R.id.okay);
-                      ok.setOnClickListener (new View.OnClickListener () {
-                        @Override
-                        public void onClick (View v) {
-                          dialog.hide ();
-                        }
-                      });
-
-                      delete.setOnClickListener (new View.OnClickListener () {
-                        @Override
-                        public void onClick (View v) {
-                          if (isOnline ()) {
-                            RequestQueue requestQueue = Volley.newRequestQueue (getActivity ());
-                            StringRequest request1 = new StringRequest (Request.Method.DELETE,
-                                    "http://andelahack.herokuapp.com/users/" + Vars.user.response.uuid + "/requests/" + eventBookedArrayList.get (position).ids,
-                                    new Response.Listener<String> () {
-                                      @Override
-                                      public void onResponse (String response) {
-                                        Toast.makeText (getActivity (), "Deleted Successfully", Toast.LENGTH_SHORT).show ();
-
-                                      }
-                                    }, new Response.ErrorListener () {
-                              @Override
-                              public void onErrorResponse (VolleyError error) {
-                                Toast.makeText (getActivity (), "Error: " + error, Toast.LENGTH_SHORT).show ();
-                              }
-                            });
-                            requestQueue.add (request1);
-                            dialog.hide ();
-                          }
-                          bookedEvents.remove (position);
-                          adapter.notifyDataSetChanged ();
-
-                        }
-                      });
-                      dialog.show ();
-                    }
-
-                  });
+//                  GsonBuilder gsonBuilder = new GsonBuilder();
+//                  Gson gson = gsonBuilder.create();
+//
+//                  bookedEvents = gson.fromJson (String.valueOf (resultValues), BookedEventData[].class);
+//                  for(BookedEventData eventData: bookedEvents){
+//                    Log.e ("start", eventData.startTime);
+//                  }
                 } catch (JSONException e) {
                   e.printStackTrace ();
                 }
 
-              }
+            }
             }, new Response.ErrorListener () {
       @Override
       public void onErrorResponse (VolleyError error) {
@@ -136,6 +103,10 @@ public class BookedEventFragment extends Fragment {
       }
     });
     queue.add (request);
+    return view;
+  }
+
+  public void setUp (View view) {
 
   }
 
@@ -156,7 +127,7 @@ public class BookedEventFragment extends Fragment {
     public String ends;
     public String ids;
     public String reminder;
-
+    public String destination;
   }
   public class MyNewAdapter extends BaseAdapter{
     ArrayList<EventBooked> eventBookeds;
@@ -197,9 +168,8 @@ public class BookedEventFragment extends Fragment {
         ((TextView) view.findViewById(R.id.start)).setText(Vars.dateToRelativeString(eventBooked.starts));
       }
       catch (Exception e) {
-
+        e.printStackTrace ();
       }
-
       return view;
     }
   }

@@ -2,98 +2,79 @@ package com.uber.executer.models;
 
 import android.content.Context;
 
+import com.google.gson.annotations.SerializedName;
+
+import org.json.JSONObject;
+
 /**
  * Created by aliyuolalekan on 8/12/15.
  */
 public class BookedEventData {
-  Context context;
-  public BookedEventData (){
 
-  }
-  public BookedEventData (Context context){
-    this.context = context;
+  @SerializedName("startTime")
+  public String startTime;
 
-  }
-  BookedEventData (String summary, String eventTime) {
-    this.summary=summary;
-    this.eventTime=eventTime;
-  }
+  @SerializedName("uid")
+  public String uid;
 
-  public void setSummary (String summary) {
+  @SerializedName("reminder")
+  public String reminder;
 
-    this.summary = summary;
-  }
+  @SerializedName("duration")
+  public String duration;
 
-  public String getSummary () {
-    return summary;
-  }
-
-  String summary;
-  String eventName;
-  String eventTime;
-  String eventLocation;
-  String pickUpLocation;
-  String eventDestination;
-  String id;
-  String uberType;
-
-  public void setUberType (String uberType) {
-    this.uberType = uberType;
+  @SerializedName("created")
+  public String created;
+  @SerializedName ("address")
+  public String address;
+  @SerializedName ("destination")
+  public JSONObject destination;
+  public void setStartTime (String startTime) {
+    this.startTime = startTime;
   }
 
-  public String getUberType () {
-    return uberType;
+  public void setUid (String uid) {
+    this.uid = uid;
   }
 
-  public void setId (String id) {
-    this.id = id;
+  public void setReminder (String reminder) {
+    this.reminder = reminder;
   }
 
-  public String getId () {
-    return id;
+  public void setDuration (String duration) {
+    this.duration = duration;
   }
 
-  public void setEventName (String eventName) {
-    this.eventName = eventName;
+  public void setCreated (String created) {
+    this.created = created;
   }
 
-  public void setEventTime (String eventTime) {
-    this.eventTime = eventTime;
+  public void setAddress (String address) {
+    this.address = address;
   }
 
-  public void setEventLocation (String eventLocation) {
-    this.eventLocation = eventLocation;
+  public String getStartTime () {
+    return startTime;
   }
 
-  public void setPickUpLocation (String pickUpLocation) {
-    this.pickUpLocation = pickUpLocation;
+  public String getUid () {
+    return uid;
   }
 
-  public void setEventDestination (String eventDestination) {
-    this.eventDestination = eventDestination;
+  public String getReminder () {
+    return reminder;
   }
 
-  public String getEventName () {
-    return eventName;
+  public String getDuration () {
+    return duration;
   }
 
-  public String getEventTime () {
-    return eventTime;
+  public String getCreated () {
+    return created;
   }
 
-  public String getEventLocation () {
-    return eventLocation;
-  }
-
-  public String getPickUpLocation () {
-    return pickUpLocation;
-  }
-
-  public String getEventDestination () {
-    return eventDestination;
-  }
-
-  public void getPickUpLocation (String pickUpLocation) {
-
+  public String getAddress () {
+    return address;
   }
 }
+

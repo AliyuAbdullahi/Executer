@@ -6,7 +6,7 @@
     android:orientation="horizontal">
     <ImageView
       android:id="@+id/image"
-      android:src="@drawable/logoone"
+      android:src="@drawable/ic_event_black_48dp"
       android:layout_width="57dp"
       android:layout_height="48dp"/>
       <LinearLayout

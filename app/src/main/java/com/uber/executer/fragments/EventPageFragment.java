@@ -88,6 +88,7 @@ public class EventPageFragment extends Fragment implements GoogleApiClient.Conne
         } catch (IOException e) {
           e.printStackTrace ();
         }
+        try{
         String cityName = addresses.get(0).getAddressLine(0);
         String stateName = addresses.get(0).getAddressLine(1);
         String countryName = addresses.get(0).getAddressLine(2);
@@ -101,6 +102,8 @@ public class EventPageFragment extends Fragment implements GoogleApiClient.Conne
         intent.putExtra ("latitude",latitude);
         intent.putExtra ("end",calendar.end);
         startActivity (intent);
+      }catch (Exception e){
+        e.printStackTrace ();}
       }
     });
     return view;

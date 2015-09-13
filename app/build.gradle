@@ -11,6 +11,8 @@ android {
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
+
     }
     buildTypes {
         release {
@@ -22,7 +24,11 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:multidex:1.0.0'
     compile 'com.android.support:appcompat-v7:22.2.1'
+    compile 'com.pkmmte.view:circularimageview:1.1'
+    compile 'com.android.support:recyclerview-v7:+'
+    compile 'it.neokree:MaterialTabs:0.11'
     compile 'org.ocpsoft.prettytime:prettytime:3.2.7.Final'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.google.code.gson:gson:2.3'

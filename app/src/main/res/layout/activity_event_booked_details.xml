@@ -1,23 +1,24 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:tools="http://schemas.android.com/tools"
-  android:orientation="vertical"
+  android:layout_width="match_parent"
   xmlns:app="http://schemas.android.com/apk/res-auto"
-  android:layout_width="match_parent"
+  android:orientation="vertical"
   android:layout_height="match_parent"
-  android:id="@+id/layoutdrawer">
+  tools:context="com.uber.executer.activities.EventBookedDetails">
+
   <include layout="@layout/toolbar"
-   android:layout_height="wrap_content"
-   android:layout_width="match_parent"/>
-<TextView
-  android:background="#F6F6F6"
-  android:paddingTop="10dp"
-  android:paddingBottom="10dp"
-  android:gravity="center_horizontal"
-  android:layout_gravity="center_horizontal"
-  android:text="EVENT DETAILS"
-  android:id="@+id/event_details_title"
-  android:layout_width="match_parent"
-  android:layout_height="wrap_content"/>
+           android:layout_height="wrap_content"
+           android:layout_width="match_parent"/>
+  <TextView
+    android:background="#F6F6F6"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:gravity="center_horizontal"
+    android:layout_gravity="center_horizontal"
+    android:text="BOOKING DETAILS"
+    android:id="@+id/event_details_title"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"/>
   <View
     android:background="#999"
     android:layout_width="match_parent"
@@ -74,7 +75,8 @@
       android:src="@drawable/logoone"
       android:layout_toRightOf="@id/titleOfEvent"
       android:layout_width="80dp"
-      android:layout_height="80dp"/>w
+      android:layout_height="80dp"/>
+
   </RelativeLayout>
   <View
     android:layout_marginBottom="10dp"
@@ -82,63 +84,25 @@
     android:background="#999"
     android:layout_width="match_parent"
     android:layout_height="1dp"/>
-  <LinearLayout
-    android:layout_marginTop="5dp"
-    android:background="@color/nativeGreen"
-    android:layout_marginRight="32dp"
-    android:layout_marginLeft="32dp"
-    android:layout_gravity="center_horizontal"
-    android:orientation="vertical"
+<LinearLayout
+  android:orientation="vertical"
+  android:layout_width="match_parent"
+  android:layout_height="200dp">
+  <it.neokree.materialtabs.MaterialTabHost
+    android:id="@+id/materialTabHostOne"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-    <TextView
-      android:padding="5dp"
-      android:layout_marginTop="5dp"
-      android:text="Pickup Location"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"/>
-    <EditText
-      android:id="@+id/pick_up_location"
-      android:padding="10dp"
-      android:layout_marginBottom="5dp"
-      android:layout_marginTop="5dp"
-      android:layout_marginRight="10dp"
-      android:layout_marginLeft="10dp"
-      android:background="#fff"
-      android:text="Location here"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"/>
-    <TextView
-      android:padding="5dp"
-      android:text="Destination"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"/>
-    <EditText
-      android:id="@+id/event_destination_"
-      android:padding="10dp"
-      android:layout_marginBottom="5dp"
-      android:layout_marginTop="5dp"
-      android:layout_marginRight="10dp"
-      android:layout_marginLeft="10dp"
-      android:background="#fff"
-      android:text="Destination goes here"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"/>
-    <TextView
-      android:padding="5dp"
-      android:text="Uber Product"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"/>
-    <Spinner
-      android:id="@+id/spinner_for_uber_type"
-      android:padding="10dp"
-      android:layout_marginBottom="5dp"
-      android:layout_marginRight="10dp"
-      android:layout_marginLeft="10dp"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content">
-    </Spinner>
-  </LinearLayout>
+    android:layout_height="48dp"
+    app:textColor="#FFFFFF"
+    app:primaryColor="#009688"
+    app:accentColor="#f06292"
+    />
+
+  <android.support.v4.view.ViewPager
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/pagerForBookedEventDetail">
+  </android.support.v4.view.ViewPager>
+</LinearLayout>
   <Button
     android:layout_gravity="center_horizontal"
     android:gravity="center_horizontal"
@@ -147,4 +111,6 @@
     android:id="@+id/bookeRideNow"
     android:layout_width="300dp"
     android:layout_height="70dp"/>
+
 </LinearLayout>
+

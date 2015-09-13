@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -30,6 +31,7 @@ import com.google.android.gms.plus.Plus;
 import com.google.api.services.calendar.CalendarScopes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.squareup.picasso.Picasso;
 import com.uber.executer.R;
 import com.uber.executer.Singletons.Vars;
 import com.uber.executer.models.Calendar;
@@ -51,9 +53,9 @@ public class MainActivity extends Activity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
   Calendar calendar;
-
+  com.pkmmte.view.CircularImageView avatar;
   public static final int RC_GOOGLE_LOGIN = 1;
-
+  TextView welcome;
   private GoogleApiClient mGoogleApiClient;
   public  static Calendar[] calendars;
   private boolean mGoogleIntentInProgress;
@@ -66,10 +68,15 @@ public class MainActivity extends Activity implements
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
-    init();
-
+    super.onCreate (savedInstanceState);
+    setContentView (R.layout.activity_main);
+    welcome = (TextView)findViewById (R.id.welcomeTextView);
+    welcome.setText ("Welcome " + Vars.user.response.first_name + " "+Vars.user.response.last_name);
+    avatar = (com.pkmmte.view.CircularImageView)findViewById (R.id.avatar);
+    Picasso.with (this).load (Vars.user.response.picture)
+            .error (R.drawable.logoone).placeholder (R.drawable.logoone)
+            .into (avatar);
+    init ();
   }
 
   private void init() {

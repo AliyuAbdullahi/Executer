@@ -4,5 +4,12 @@
   <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
     <!-- Customize your theme here. -->
   </style>
-  <style name="ToolBarThem" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+  <style name="ToolBarThem" parent="Theme.AppCompat.Light.NoActionBar"/>
+  <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
+    <item name="colorPrimary">#009688</item>
+    <item name="colorPrimaryDark">#60009688</item>
+    <item name="colorAccent">#f06292</item>
+    <item name="android:windowTranslucentStatus">true</item>
+    <item name="android:windowTranslucentNavigation">true</item>
+  </style>
 </resources>

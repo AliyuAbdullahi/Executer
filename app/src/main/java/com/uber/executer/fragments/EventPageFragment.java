@@ -95,9 +95,11 @@ public class EventPageFragment extends Fragment implements GoogleApiClient.Conne
         intent.putExtra ("summary", calendar.getSummary ());
         intent.putExtra ("location", calendar.getLocation ());
         intent.putExtra ("startTime", coolTime);
+        intent.putExtra("startOrigin",calendar.start);
         intent.putExtra ("currentLocation", cityName+"/"+stateName);
         intent.putExtra ("longitude",longitude);
         intent.putExtra ("latitude",latitude);
+        intent.putExtra ("end",calendar.end);
         startActivity (intent);
       }
     });

@@ -1,10 +1,8 @@
 package com.uber.executer.fragments;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -21,7 +19,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.uber.executer.R;
-import com.uber.executer.activities.BookedEvents;
 
 /**
  * Created by aliyuolalekan on 8/12/15.
@@ -80,60 +77,6 @@ public class NavFragment extends Fragment {
     });
     return view;
   }
-  public void closeDrawer(){
-    containerView = getActivity ().findViewById (R.id.navigation_drawer);
-    if(drawerLayout.isDrawerOpen (containerView))
-    drawerLayout.closeDrawer (containerView);
-  }
-  public void openDrawer(){
-    containerView = getActivity ().findViewById (R.id.navigation_drawer);
-    if(!drawerLayout.isDrawerOpen (containerView)){
-      drawerLayout.openDrawer (containerView);
-    }
-  }
-
-  public void setUp (int fragmentId, DrawerLayout layout) {
-    containerView = getActivity ().findViewById (R.id.navigation_drawer);
-    drawerLayout = layout;
-    drawertoggle = new ActionBarDrawerToggle (getActivity (),drawerLayout,R.string.drawer_opened,R.string.drawer_closed){
-      @Override
-      public void onDrawerOpened (View drawerView) {
-        super.onDrawerOpened (drawerView);
-        if(!fragmentIsSeen){
-          fragmentIsSeen = true;
-          saveToPreference (getActivity (),KEY_USER_LEARNED_DRAWER,fragmentIsSeen + "");
-        }
-        getActivity ().invalidateOptionsMenu ();
-      }
-
-      @Override
-      public void onDrawerClosed (View drawerView) {
-        super.onDrawerClosed (drawerView);
-        getActivity ().invalidateOptionsMenu ();
-      }
-
-      @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-      @Override
-      public void onDrawerSlide (View drawerView, float slideOffset) {
-        super.onDrawerSlide (drawerView, slideOffset);
-
-      }
-    };
-    if(!fragmentIsSeen && !fromSavedState){
-      drawerLayout.openDrawer (containerView);
-
-    }
-
-    drawerLayout.setDrawerListener (drawertoggle);
-    drawerLayout.post (new Runnable () {
-      @Override
-      public void run () {
-        drawertoggle.syncState ();
-      }
-    });
-  }
-
-
 
   public static void saveToPreference(Context context, String preferenceName, String preferenceValue){
     SharedPreferences sharedPreference = context.getSharedPreferences (PREF_FILE_NAME, Context.MODE_PRIVATE);

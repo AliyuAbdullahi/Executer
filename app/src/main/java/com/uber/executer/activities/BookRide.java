@@ -1,7 +1,6 @@
 package com.uber.executer.activities;
 
 import android.app.AlarmManager;
-import android.app.Dialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -9,35 +8,45 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.v4.widget.DrawerLayout;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TimeZone;
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.uber.executer.fragments.NavFragment;
 import com.uber.executer.R;
 import com.uber.executer.Singletons.Vars;
 import com.uber.executer.models.Calendar;
+import com.uber.executer.models.Events;
 import com.uber.executer.services.AlarmReciever;
 
 import org.json.JSONException;
@@ -50,37 +59,32 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BookRide extends AppCompatActivity {
-  DrawerLayout drawerLayout;
-  TextView myCurrentLocation;
-  TextView clickImage;
-  TextView startTime;
-  TextView showBookedEvents;
+  Events[] eventses;
+
+  TextView eventTitle;
+  TextView startTimeValueOfEvent;
+  TextView endTimeValueOfEvent;
   EditText pickUpLocation;
+  EditText eventDestination;
+  Spinner spinnerForUberType;
+  ArrayAdapter<String> adapter;
+
   JSONObject locationObject;
-  String pickup;
-  Dialog dialog;
   static final String UBER_BLACK = "UberBLACK";
   static final String UBER_X = "uberX";
   static final String UBER_TAXI = "UberSUV";
-  LinearLayout cars;
-  EditText destination;
+
   Toolbar toolbar;
   Button bookARide;
-  TableLayout tableLayout;
-  Button chooseAride;
-  TableRow row;
-  ImageView uberx;
-  ImageView uberBlack;
-  ImageView ubertaxi;
-  TextView carType;
   NotificationManager manager;
-  Animation animation;
+  FragmentManager fm = getSupportFragmentManager();
   @Override
   protected void onCreate (Bundle savedInstanceState) {
     super.onCreate (savedInstanceState);
 
     //set up layout
     setContentView (R.layout.activity_book_ride);
+    initField ();
     //prevent editText from gaining focus on lunch of activity
 //    getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
@@ -97,95 +101,76 @@ public class BookRide extends AppCompatActivity {
     toolbarTitle.setText ("EXECUTER");
     Typeface tf = Typeface.createFromAsset (getAssets (),"MuseoSans-300.otf");
     toolbarTitle.setTypeface (tf);
-    drawerLayout = (DrawerLayout)findViewById (R.id.layoutdrawer);
-    NavFragment navigation = (NavFragment)getSupportFragmentManager ().findFragmentById (R.id.navigation_drawer);
-    navigation.setUp (R.id.navigation_drawer, drawerLayout);
-
 
     //get data from EventPageFragment and populate the view
     Intent gotten = getIntent ();
-    final double longitude = gotten.getDoubleExtra ("longitude",0);
-    final double latitude = gotten.getDoubleExtra ("latitude",0);
+    final String end = gotten.getStringExtra ("end");
+    final double longitude = gotten.getDoubleExtra ("longitude", 0);
+    final double latitude = gotten.getDoubleExtra ("latitude", 0);
     final String location = gotten.getStringExtra ("location");
     final String summary = gotten.getStringExtra ("summary");
     final String timing = gotten.getStringExtra ("startTime");
     final String myLocation = gotten.getStringExtra ("currentLocation");
-    TextView eventsummary = (TextView)findViewById (R.id.event_title_text);
-    TextView eventLocation = (TextView)findViewById (R.id.event_location);
-    eventsummary.setText (summary);
-    eventLocation.setText (location);
+    final String dataTime = gotten.getStringExtra ("startOrigin");
+
+    eventTitle.setText (summary);
+    eventDestination.setText (location);
+    startTimeValueOfEvent.setText (timing);
+    endTimeValueOfEvent.setText (end);
+    spinnerForUberType = (Spinner)findViewById (R.id.spinner_for_uber_type);
 
 
-    //make cars layout invisible
-    cars = (LinearLayout)findViewById (R.id.cars);
-    cars.setVisibility (View.INVISIBLE);
 
-    //get instance of the tablelayout
-    tableLayout = (TableLayout)findViewById (R.id.table);
-    row = (TableRow)tableLayout.findViewById (R.id.uber_types);
-    pickUpLocation = (EditText)tableLayout.findViewById (R.id.pick_up);
-    //set click image notification text invisible
-    clickImage = (TextView)findViewById (R.id.click_to_select);
-    clickImage.setVisibility (View.INVISIBLE);
-    //get event start time
-    startTime = (TextView)tableLayout.findViewById (R.id.event_start_time);
-    myCurrentLocation = (TextView)tableLayout.findViewById (R.id.my_current_location);
-    myCurrentLocation.setText (myLocation);
-    String[] formattedTime = timing.split (" ");
-    startTime.setText (formattedTime[0]+" "+formattedTime[1]+" "+formattedTime[2]);
-//    startTime.setText (timing);
-    //set up drawer layout
-    drawerLayout = (DrawerLayout)findViewById (R.id.drawerlayout);
+    List<String> list;
 
-    row.setVisibility (View.INVISIBLE);
-    chooseAride = (Button)tableLayout.findViewById (R.id.choose_a_ride);
-    carType = (TextView)tableLayout.findViewById (R.id.uber_type_here);
-    destination = (EditText)tableLayout.findViewById (R.id.event_location);
-    destination.setText (location);
-    // book a ride
-    bookARide = (Button)findViewById (R.id.book_a_ride);
-    bookARide.setVisibility(View.INVISIBLE);
+    list = new ArrayList<String> ();
+    for(String item: getResources ().getStringArray (R.array.taxies)){
+      list.add(item);
+    }
+    adapter = new ArrayAdapter<String>(getApplicationContext(),
+            android.R.layout.simple_spinner_item, list);
+    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    spinnerForUberType.setAdapter(adapter);
+
+
+    bookARide = (Button)findViewById (R.id.bookeRideNow);
     bookARide.setOnClickListener (new View.OnClickListener () {
       @Override
       public void onClick (View v) {
 
-
-
         if(isOnline ()){
           try{
             locationObject = new JSONObject ();
-            locationObject.put ("latitude",longitude);
-            locationObject.put("longitude",latitude);
+            locationObject.put ("latitude",latitude);
+            locationObject.put("longitude",longitude);
           }
           catch(JSONException e){
             e.printStackTrace ();
           }
           //get pickup location text in string format
-          pickup = pickUpLocation.getText ().toString ();
-
-          final String myDestination = destination.getText ().toString ();
-          //get the car type
-          final String car = carType.getText ().toString ();
-          // get the current time of request
-          long time = new Date ().getTime ();
-          DateFormat formatter = new SimpleDateFormat ("HH:mm:ss:SSS");
-          String formattedTime = formatter.format (time);
-
-          //get user location
-          //get user destination
-          //get user longitude
-          //get user latitude
 
           RequestQueue queue = Volley.newRequestQueue (getApplicationContext ());
           StringRequest stringRequest = new StringRequest (Request.Method.POST, "http://andelahack.herokuapp.com/users/"+ Vars.user.response.uuid+"/requests", new Response.Listener<String> () {
             @Override
             public void onResponse (String response) {
-              Toast.makeText (getApplicationContext (), response,Toast.LENGTH_LONG).show ();
-
+              String reminderTime;
+              try {
+                JSONObject object = new JSONObject (response);
+                JSONObject objectResponse = object.getJSONObject ("response");
+                Log.e ("Response:", response);
+                Toast.makeText (getApplicationContext (),response,Toast.LENGTH_LONG).show ();
+                JSONObject estimate = objectResponse.getJSONObject ("estimates");
+                Toast.makeText (getApplicationContext (),estimate+"",Toast.LENGTH_LONG).show ();
+                Log.e("Estimates: ",estimate+"");
+                reminderTime = estimate.getString ("reminder");
+                Log.e ("reminder", reminderTime);
+              } catch (JSONException e) {
+                e.printStackTrace ();
+              }
 
               Intent myIntent = new Intent(BookRide.this, AlarmReciever.class);
 
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(BookRide.this,
+              PendingIntent pendingIntent = PendingIntent.getBroadcast(BookRide.this,
                     0, myIntent, 0);
 
             AlarmManager alarmManager = (AlarmManager)getApplicationContext (). getSystemService (Context.ALARM_SERVICE);
@@ -212,13 +197,11 @@ public class BookRide extends AppCompatActivity {
             protected Map<String, String> getParams () throws AuthFailureError {
               super.getParams ();
               Map<String,String> params = new HashMap<String, String> ();
-              params.put("destination",location);
-              params.put("startTime",timing);
-              params.put("productType",car);
+              params.put("destination",eventDestination.getText ().toString ());
+              params.put("startTime",dataTime);
+              params.put("productType",spinnerForUberType.getSelectedItem ().toString ());
               params.put("location", locationObject.toString ());
-
               return params;
-
             }
 
             @Override
@@ -229,159 +212,35 @@ public class BookRide extends AppCompatActivity {
               return params;
             }
           };
+          int socketTimeout = 30000;//30 seconds - change to what you want
+          RetryPolicy policy = new DefaultRetryPolicy (socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+          stringRequest.setRetryPolicy(policy);
+
           queue.add (stringRequest);
-          pickUpLocation.setText ("");
         }
         else {
           Toast.makeText (BookRide.this, "Enable network connection", Toast.LENGTH_SHORT).show ();
         }
-
       }
     });
-
-
     //setup taxies
-    uberBlack = (ImageView)findViewById (R.id.uber_black_one);
-    uberx = (ImageView)findViewById (R.id.uber_x);
-    ubertaxi = (ImageView)findViewById (R.id.uber_taxi);
 
 
-    //setup listeners for taxies
-    uberBlack.setOnClickListener (new View.OnClickListener () {
-      @Override
-      public void onClick (View v) {
-        choose(UBER_BLACK);
-        zoomIn (v);
-
-
-      }
-    });
-
-
-    uberBlack.setOnLongClickListener (new View.OnLongClickListener () {
-      @Override
-      public boolean onLongClick (View v) {
-        dialog = new Dialog (BookRide.this);
-        dialog.setContentView (R.layout.car_detail_dialog);
-        Toolbar toolbar = (Toolbar) dialog.findViewById (R.id.toolbar);
-        dialog.setTitle ("");
-        ImageView carImage = (ImageView) dialog.findViewById (R.id.uber_black_detail_car);
-        carImage.setImageResource (R.drawable.uber_black);
-        Animation animation = AnimationUtils.loadAnimation (getApplicationContext (),R.anim.abc_fade_in);
-        animation.setDuration (2000);
-        carImage.setAnimation (animation);
-        TextView carTitle = (TextView) dialog.findViewById (R.id.car_title);
-        carTitle.setText ("UBER BLACK");
-        TextView carProperty = (TextView) dialog.findViewById (R.id.car_property);
-        carProperty.setText (R.string.uber_black_details);
-        Button gotIt = (Button) dialog.findViewById (R.id.gotit);
-        gotIt.setOnClickListener (new View.OnClickListener () {
-          @Override
-          public void onClick (View v) {
-            dialog.hide ();
-          }
-        });
-        dialog.show ();
-        return true;
-      }
-    });
-
-
-    uberx.setOnClickListener (new View.OnClickListener () {
-      @Override
-      public void onClick (View v) {
-        choose (UBER_X);
-        zoomIn (v);
-
-      }
-    });
-
-
-    uberx.setOnLongClickListener (new View.OnLongClickListener () {
-      @Override
-      public boolean onLongClick (View v) {
-        dialog = new Dialog (BookRide.this);
-        dialog.setContentView (R.layout.car_detail_dialog);
-        Toolbar toolbar = (Toolbar) dialog.findViewById (R.id.toolbar);
-        dialog.setTitle ("");
-        ImageView carImage = (ImageView) dialog.findViewById (R.id.uber_black_detail_car);
-        carImage.setImageResource (R.drawable.new_uber);
-        Animation animation = AnimationUtils.loadAnimation (getApplicationContext (),R.anim.abc_fade_in);
-        animation.setDuration (2000);
-        carImage.setAnimation (animation);
-        TextView carTitle = (TextView) dialog.findViewById (R.id.car_title);
-        carTitle.setText ("UBER X");
-        TextView carProperty = (TextView) dialog.findViewById (R.id.car_property);
-        carProperty.setText (R.string.uber_x_details);
-        Button gotIt = (Button) dialog.findViewById (R.id.gotit);
-        gotIt.setOnClickListener (new View.OnClickListener () {
-          @Override
-          public void onClick (View v) {
-            dialog.hide ();
-          }
-        });
-        dialog.show ();
-        return true;
-      }
-    });
-
-
-    ubertaxi.setOnClickListener (new View.OnClickListener () {
-      @Override
-      public void onClick (View v) {
-        choose (UBER_TAXI);
-        zoomIn (v);
-      }
-    });
-
-
-    ubertaxi.setOnLongClickListener (new View.OnLongClickListener () {
-      @Override
-      public boolean onLongClick (View v) {
-        dialog = new Dialog (BookRide.this);
-        dialog.setContentView (R.layout.car_detail_dialog);
-        Toolbar toolbar = (Toolbar) dialog.findViewById (R.id.toolbar);
-        dialog.setTitle ("");
-        ImageView carImage = (ImageView) dialog.findViewById (R.id.uber_black_detail_car);
-        carImage.setImageResource (R.drawable.taxi);
-        Animation animation = AnimationUtils.loadAnimation (getApplicationContext (),R.anim.abc_fade_in);
-        animation.setDuration (2000);
-        carImage.setAnimation (animation);
-        TextView carTitle = (TextView) dialog.findViewById (R.id.car_title);
-        carTitle.setText ("UBER SUV");
-        TextView carProperty = (TextView) dialog.findViewById (R.id.car_property);
-        carProperty.setText (R.string.uber_taxi_details);
-        Button gotIt = (Button) dialog.findViewById (R.id.gotit);
-        gotIt.setOnClickListener (new View.OnClickListener () {
-          @Override
-          public void onClick (View v) {
-            dialog.hide ();
-          }
-        });
-        dialog.show ();
-        return true;
-      }
-    });
-
-
-    chooseAride.setOnClickListener (new View.OnClickListener () {
-      @Override
-      public void onClick (View v) {
-        cars.setVisibility (View.VISIBLE);
-        chooseAride.setVisibility (View.INVISIBLE);
-        bookARide.setVisibility (View.VISIBLE);
-        clickImage.setVisibility (View.VISIBLE);
-
-
-      }
-    });
+  }
+  public void initField(){
+    eventTitle = (TextView)findViewById (R.id.titleOfEvent);
+    startTimeValueOfEvent = (TextView)findViewById (R.id.startTimeOfEvent);
+    endTimeValueOfEvent = (TextView)findViewById (R.id.endTimeOfEvent);
+    pickUpLocation = (EditText)findViewById (R.id.pick_up_location);
+    eventDestination = (EditText)findViewById (R.id.event_destination_);
+    bookARide = (Button)findViewById (R.id.bookeRideNow);
   }
 
   //check if there is network
   public boolean isOnline() {
     ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService (Context.CONNECTIVITY_SERVICE);
     NetworkInfo info = connectivityManager.getActiveNetworkInfo();
-    if (info != null && info.isConnectedOrConnecting()) {
+    if (info != null && info.isConnectedOrConnecting ()) {
       return true;
     } else {
       return false;
@@ -416,17 +275,9 @@ public class BookRide extends AppCompatActivity {
     return super.onOptionsItemSelected (item);
   }
 
-  public void choose(String type){
-    row.setVisibility (View.VISIBLE);
-    carType.setText (type);
-  }
-  public void zoomIn(View view){
-    Animation animation =  AnimationUtils.loadAnimation (getApplicationContext (), R.anim.zoom_out);
-    view.setAnimation (animation);
-    animation.start ();
-  }
   private void toastMessage(String message){
     Toast.makeText (this, message, Toast.LENGTH_SHORT).show ();
   }
+
 
 }

@@ -11,8 +11,7 @@ import android.support.annotation.Nullable;
 import android.widget.RemoteViews;
 
 import com.uber.executer.R;
-import com.uber.executer.activities.BookedEvents;
-import com.uber.executer.activities.MainActivity;
+import com.uber.executer.activities.EventPage;
 
 /**
  * Created by aliyuolalekan on 8/19/15.
@@ -48,7 +47,7 @@ public class NotificationService extends Service {
     contentView.setTextViewText(R.id.text, "This is a custom layout");
     notification.contentView = contentView;
 
-    Intent notificationIntent = new Intent(this, BookedEvents.class);
+    Intent notificationIntent = new Intent(this, EventPage.class);
     PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
     notification.contentIntent = contentIntent;
 

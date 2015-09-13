@@ -1,10 +1,14 @@
-package com.uber.executer;
+package com.uber.executer.activities;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
@@ -15,8 +19,12 @@ import android.view.View;
 import android.view.Window;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.uber.executer.R;
+import com.uber.executer.Singletons.Vars;
 import com.uber.executer.models.User;
 
 public class LoginActivity extends AppCompatActivity {

@@ -1,15 +1,36 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-                android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:paddingRight="@dimen/activity_horizontal_margin"
-                android:paddingTop="@dimen/activity_vertical_margin"
-                android:paddingBottom="@dimen/activity_vertical_margin"
-                tools:context="com.andela.uberhack.EventPage">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:orientation="vertical"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:id="@+id/drawerlayout">
 
-  <ListView
-    android:id="@+id/events"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
-  </ListView>
 
-</RelativeLayout>
+  <LinearLayout
+    android:orientation="vertical"
+    android:fitsSystemWindows="true"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".EventPage">
+
+    <include layout="@layout/toolbar"
+             android:id="@+id/toolbar"/>
+
+    <it.neokree.materialtabs.MaterialTabHost
+      android:id="@+id/materialTabHost"
+      android:layout_width="match_parent"
+      android:layout_height="48dp"
+      app:textColor="#FFFFFF"
+      app:primaryColor="#009688"
+      app:accentColor="#f06292"
+       />
+
+    <android.support.v4.view.ViewPager
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:id="@+id/pager">
+
+    </android.support.v4.view.ViewPager>
+  </LinearLayout>
+</LinearLayout>

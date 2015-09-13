@@ -2,52 +2,49 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
   android:background="@color/nativeGreen"
   android:orientation="vertical"
   tools:context=".MainActivity">
-
-  <ImageView
-    android:id="@+id/executeruber"
-    android:layout_width="wrap_content"
-    android:layout_gravity="center_horizontal"
-    android:src="@drawable/executr"
-    android:layout_height="wrap_content"
-    android:layout_alignParentTop="true"
-    android:layout_centerHorizontal="true"
-    android:layout_marginTop="55dp"/>
-
   <TextView
-    android:textSize="32sp"
     android:textStyle="bold"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:textAppearance="?android:attr/textAppearanceLarge"
-    android:text="EXECUTER"
-    android:id="@+id/executer"
-    android:layout_below="@id/executeruber"
+    android:textSize="16sp"
+    android:textColor="#000"
+    android:layout_marginBottom="40dp"
+    android:layout_marginTop="30dp"
+    android:id="@+id/welcomeTextView"
+    android:text="Welcome, Loading contents..."
+    android:gravity="center_horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"/>
+
+  <com.pkmmte.view.CircularImageView
+    android:gravity="center_horizontal"
+    android:id="@+id/avatar"
+    android:layout_width="250dp"
+    android:layout_height="250dp"
+    android:src="@drawable/suver"
+    app:border="true"
+    app:border_color="#EEEEEE"
+    app:border_width="4dp"
+    app:shadow="true"
+    android:layout_below="@+id/welcomeTextView"
     android:layout_centerHorizontal="true"/>
 
   <TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:textAppearance="?android:attr/textAppearanceMedium"
-    android:text="POWERED BY UBER"
-    android:id="@+id/textView2"
-    android:layout_below="@+id/executer"
-    android:layout_alignLeft="@+id/executer"
-    android:layout_alignStart="@+id/executer"/>
-
-  <TextView
+    android:textStyle="bold"
     android:id="@+id/sync_calendar"
-    android:layout_width="wrap_content"
-    android:textSize="20sp"
+    android:layout_width="match_parent"
+    android:textSize="16sp"
+    android:textColor="#000"
     android:layout_gravity="center_horizontal"
-    android:gravity="center"
-    android:text="Authenticate with Goolge to get your Calendar"
+    android:gravity="center_horizontal"
+    android:text="Authenticate with Google to get your Calendar"
     android:layout_height="wrap_content"
     android:layout_above="@+id/google_plus_button"
-    android:layout_centerHorizontal="true"
-    android:layout_marginBottom="50dp"/>
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentStart="true"
+    android:layout_marginBottom="24dp"/>
 
   <ImageButton
     android:layout_width="wrap_content"

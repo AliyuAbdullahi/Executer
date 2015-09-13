@@ -1,0 +1,116 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:orientation="vertical"
+  android:layout_height="match_parent"
+  tools:context="com.uber.executer.activities.EventBookedDetails">
+
+  <include layout="@layout/toolbar"
+           android:layout_height="wrap_content"
+           android:layout_width="match_parent"/>
+  <TextView
+    android:background="#F6F6F6"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:gravity="center_horizontal"
+    android:layout_gravity="center_horizontal"
+    android:text="BOOKING DETAILS"
+    android:id="@+id/event_details_title"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"/>
+  <View
+    android:background="#999"
+    android:layout_width="match_parent"
+    android:layout_height="2dp"/>
+  <RelativeLayout
+    android:layout_marginLeft="8dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <TextView
+      android:layout_marginBottom="10dp"
+      android:layout_marginTop="10dp"
+      android:text="This is the damn title for the event"
+      android:id="@+id/titleOfEvent"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"/>
+    <LinearLayout
+      android:layout_marginTop="15dp"
+      android:layout_below="@id/titleOfEvent"
+      android:id="@+id/container_start"
+      android:orientation="horizontal"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content">
+      <TextView
+        android:text="Start: "
+        android:id="@+id/startTimeOfEvent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+      <TextView
+        android:text="0/7/29:00000"
+        android:id="@+id/startTimeValueofEvent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    </LinearLayout>
+    <LinearLayout
+      android:id="@+id/container_ends"
+      android:layout_below="@id/container_start"
+      android:orientation="horizontal"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content">
+      <TextView
+        android:id="@+id/endTimeOfEvent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ends: "/>
+      <TextView
+        android:id="@+id/endTimeValueOfEvent"
+        android:text="8888/0000/3333"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    </LinearLayout>
+    <ImageView
+      android:layout_marginTop="10dp"
+      android:layout_alignParentRight="true"
+      android:src="@drawable/logoone"
+      android:layout_toRightOf="@id/titleOfEvent"
+      android:layout_width="80dp"
+      android:layout_height="80dp"/>
+
+  </RelativeLayout>
+  <View
+    android:layout_marginBottom="10dp"
+    android:layout_marginTop="10dp"
+    android:background="#999"
+    android:layout_width="match_parent"
+    android:layout_height="1dp"/>
+<LinearLayout
+  android:orientation="vertical"
+  android:layout_width="match_parent"
+  android:layout_height="200dp">
+  <it.neokree.materialtabs.MaterialTabHost
+    android:id="@+id/materialTabHostOne"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    app:textColor="#FFFFFF"
+    app:primaryColor="#009688"
+    app:accentColor="#f06292"
+    />
+
+  <android.support.v4.view.ViewPager
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/pagerForBookedEventDetail">
+  </android.support.v4.view.ViewPager>
+</LinearLayout>
+  <Button
+    android:layout_gravity="center_horizontal"
+    android:gravity="center_horizontal"
+    android:background="@drawable/book_ride_button"
+    android:layout_marginTop="30dp"
+    android:id="@+id/bookeRideNow"
+    android:layout_width="300dp"
+    android:layout_height="70dp"/>
+
+</LinearLayout>
+

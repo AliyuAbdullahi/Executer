@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="arsh">#EEEEEE</color>
     <color name="colorPrimary">#FF5722</color>
     <color name="colorOrange1">#FFAC00</color>
     <color name="colorOrange2">#FFD000</color>

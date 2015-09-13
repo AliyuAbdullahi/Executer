@@ -15,4 +15,19 @@
   <string name="taxi_type">Taxi type</string>
   <string name="pickup_location">Pickup Location</string>
   <string name="title_activity_login">LoginActivity</string>
+  <string name="title_activity_book_ride">BookRide</string>
+  <string name="uber_black_details">Your own private driver, on demand.
+Expect pickup in a high-end sedan within minutes.</string>
+  <string name="title_activity_booked_events">BookedEvents</string>
+  <string name="uber_x_details">Everyday cars for everyday use. Better, faster, and cheaper than a taxi.</string>
+  <string name="uber_suv_details">For those times when you need a bit more space.
+Seats up to six people in style.</string>
+  <string name="drawer_opened">drawer opened</string>
+  <string name="drawer_closed">drawer closed</string>
+  <string name="title_activity_event_request_confirmation">EventRequestConfirmation</string>
+  <string-array name="tabs">
+    <item>Events</item>
+    <item>Booked Events</item>
+  </string-array>
+  <string name="title_activity_event_booked_details">EventBookedDetails</string>
 </resources>

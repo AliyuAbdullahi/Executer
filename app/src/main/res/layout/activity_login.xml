@@ -12,7 +12,7 @@
     android:layout_gravity="center_horizontal"
     android:src="@drawable/executr"
     android:layout_height="wrap_content"
-    android:layout_above="@+id/textView"
+    android:layout_above="@+id/executer_text1"
     android:layout_centerHorizontal="true"/>
 
 
@@ -22,31 +22,34 @@
     android:background="@null"
     android:onClick="authDialog"
     android:layout_gravity="center_horizontal"
-
     android:layout_height="wrap_content"
     android:id="@+id/imageButton"
     android:layout_marginTop="62dp"
-    android:layout_below="@+id/textView2"
+    android:layout_below="@+id/powered_uber"
     android:layout_centerHorizontal="true"/>
 
   <TextView
-    android:textSize="32sp"
+    android:gravity="center_horizontal"
+    android:textSize="73.3sp"
     android:textStyle="bold"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:textAppearance="?android:attr/textAppearanceLarge"
     android:text="EXECUTER"
-    android:id="@+id/textView"
-    android:layout_above="@+id/textView2"
+    android:id="@+id/executer_text1"
+    android:layout_above="@+id/powered_uber"
     android:layout_centerHorizontal="true"/>
 
   <TextView
-    android:layout_width="wrap_content"
+    android:gravity="center_horizontal"
+    android:textStyle="bold"
+    android:letterSpacing="0.3"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:textAppearance="?android:attr/textAppearanceMedium"
     android:text="POWERED BY UBER"
-    android:id="@+id/textView2"
+    android:id="@+id/powered_uber"
     android:layout_centerVertical="true"
-    android:layout_alignLeft="@+id/textView"
-    android:layout_alignStart="@+id/textView"/>
+    android:layout_alignRight="@+id/executer_text1"
+    android:layout_alignEnd="@+id/executer_text1"/>
 </RelativeLayout>

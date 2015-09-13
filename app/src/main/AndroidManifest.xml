@@ -4,16 +4,29 @@
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
 
     <application
+        android:name="android.support.multidex.MultiDexApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme.Base" >
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
         <activity
-            android:name=".LoginActivity"
-            android:label="@string/app_name" >
+            android:name=".activities.LoginActivity"
+            android:configChanges="orientation"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,12 +34,34 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
-            android:label="@string/title_activity_login" >
+            android:name=".activities.MainActivity"
+            android:configChanges="orientation"
+            android:label="@string/title_activity_login"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".EventPage"
-            android:label="@string/title_activity_event_page" >
+            android:name=".activities.EventPage"
+            android:configChanges="orientation"
+            android:label="@string/title_activity_event_page"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".activities.BookRide"
+            android:configChanges="orientation"
+            android:label="@string/title_activity_book_ride"
+            android:screenOrientation="portrait" >
+        </activity>
+
+        <receiver android:name=".services.AlarmReciever" >
+        </receiver>
+
+        <service
+            android:name=".services.NotificationService"
+            android:enabled="true" />
+
+        <activity
+            android:name=".activities.EventBookedDetails"
+            android:label="@string/title_activity_event_booked_details" >
         </activity>
     </application>
 

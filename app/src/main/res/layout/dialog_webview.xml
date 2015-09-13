@@ -1,10 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
  android:layout_width="match_parent"
+ android:id="@+id/frame"
  android:layout_height="500dp">
-
   <WebView
     android:layout_width="match_parent"
     android:id="@+id/authWebView"
     android:layout_height="match_parent"/>
+  <LinearLayout
+    android:id="@+id/line"
+    android:orientation="horizontal"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+  <TextView
+    android:textStyle="bold"
+    android:textSize="20sp"
+    android:text="loading..."
+    android:id="@+id/please_wait"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"/>
+
+  </LinearLayout>
+
 </FrameLayout>

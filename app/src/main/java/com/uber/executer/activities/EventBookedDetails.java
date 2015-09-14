@@ -50,7 +50,7 @@ public class EventBookedDetails extends AppCompatActivity implements MaterialTab
     TextView mTitle = (TextView) toolbar.findViewById(R.id.toolbar_title);
     mTitle.setText ("executer");
     mTitle.setAllCaps (false);
-    Typeface tf = Typeface.createFromAsset (getAssets (),"MuseoSans-300.otf");
+    Typeface tf = Typeface.createFromAsset (getAssets (),"MuseoSans_900.otf");
     mTitle.setTypeface (tf);
     getSupportActionBar ().setDisplayHomeAsUpEnabled (false);
     getSupportActionBar ().setDisplayShowHomeEnabled (false);
@@ -203,4 +203,5 @@ public class EventBookedDetails extends AppCompatActivity implements MaterialTab
     reminder = here.getStringExtra ("reminder");
     return reminder;
   }
+
 }

@@ -72,9 +72,19 @@ public class MainActivity extends Activity implements
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate (savedInstanceState);
+    if (getIntent().getBooleanExtra("EXIT", false)) {
+      this.moveTaskToBack(true);
+    }
     setContentView (R.layout.activity_main);
+
     welcome = (TextView)findViewById (R.id.welcomeTextView);
-    welcome.setText ("Welcome " + Vars.user.response.first_name + " "+Vars.user.response.last_name);
+    try{
+      welcome.setText ("Welcome " + Vars.user.response.first_name + " "+Vars.user.response.last_name);
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace ();
+    }
     avatar = (com.pkmmte.view.CircularImageView)findViewById (R.id.avatar);
     Picasso.with (this).load (Vars.user.response.picture)
             .error (R.drawable.logoone).placeholder (R.drawable.logoone)
@@ -112,7 +122,13 @@ public class MainActivity extends Activity implements
   }
 
   private void loginAndGetToken() {
-    mAuthProgressDialog.show ();
+    try{
+      mAuthProgressDialog.show ();
+    }
+    catch (Exception e){
+      e.printStackTrace ();
+    }
+
     AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
       String errorMessage = null;
 
@@ -202,22 +218,19 @@ public class MainActivity extends Activity implements
         }
       }
     };
-    task.execute();
+    task.execute ();
   }
 
-  public GoogleApiClient buildApiClient(){
-    return new GoogleApiClient.Builder(this)
-            .addConnectionCallbacks (this)
-            .addOnConnectionFailedListener (this)
-            .addApi (Plus.API)
-            .addScope (Plus.SCOPE_PLUS_LOGIN)
-            .build ();
-  }
   @Override
   public void onConnected(final Bundle bundle) {
     MyApp.mGoogleApiClient = this.mGoogleApiClient;
-    loginAndGetToken ();
+     try {
+       loginAndGetToken ();
+     }catch (Exception e){
+       e.printStackTrace ();
+     }
   }
+
 
   @Override
   public void onConnectionFailed(ConnectionResult result) {
@@ -257,6 +270,14 @@ public class MainActivity extends Activity implements
     // policies.
     Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient);
     mGoogleApiClient.connect();
+  }
+
+  @Override
+  public void onBackPressed () {
+    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    intent.putExtra("EXIT", true);
+    startActivity(intent);
   }
 
   @Override

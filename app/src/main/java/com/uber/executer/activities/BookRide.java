@@ -110,7 +110,13 @@ public class BookRide extends AppCompatActivity {
     TextView toolbarTitle = (TextView)findViewById (R.id.toolbar_title);
     toolbarTitle.setText ("executer");
     toolbarTitle.setAllCaps (false);
-    Typeface tf = Typeface.createFromAsset (getAssets (),"MuseoSans-300.otf");
+    Typeface tf = null;
+    try{
+      tf = Typeface.createFromAsset (getAssets (),"MuseoSans_900.otf");
+    }
+    catch (Exception e){
+      e.printStackTrace ();
+    }
     toolbarTitle.setTypeface (tf);
 
     //get data from EventPageFragment and populate the view
@@ -167,13 +173,11 @@ public class BookRide extends AppCompatActivity {
                 Log.e("response",response);
                 JSONObject objectResponse = object.getJSONObject ("response");
                 Log.e ("obectResponse:", objectResponse+"");
-                Toast.makeText (getApplicationContext (),response,Toast.LENGTH_LONG).show ();
                 JSONObject product = objectResponse.getJSONObject ("product");
                 JSONObject estimate = objectResponse.getJSONObject ("estimates");
                 productString = product.getString ("type");
                 JSONObject destinationObj = objectResponse.getJSONObject ("destination");
                 address = destinationObj.getString ("address");
-                Toast.makeText (getApplicationContext (),estimate+"",Toast.LENGTH_LONG).show ();
                 Log.e("Estimates: ",estimate+"");
                 reminderTime = estimate.getString ("reminder");
                 Log.e ("reminder", reminderTime);
@@ -321,5 +325,6 @@ public class BookRide extends AppCompatActivity {
   private void toastMessage(String message){
     Toast.makeText (this, message, Toast.LENGTH_SHORT).show ();
   }
+
 
 }

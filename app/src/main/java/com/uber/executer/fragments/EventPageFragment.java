@@ -69,7 +69,13 @@ public class EventPageFragment extends Fragment implements GoogleApiClient.Conne
 //    else
 //      Toast.makeText(getActivity (), "GPS is enabled!", Toast.LENGTH_LONG).show();
     eventList = (ListView)view. findViewById(R.id.events);
-    eventList.setAdapter (new EventAdapter (getActivity (), calendars));
+    try{
+      eventList.setAdapter (new EventAdapter (getActivity (), calendars));
+    }
+    catch (Exception e){
+      e.printStackTrace ();
+    }
+
     eventList.setOnItemClickListener (new AdapterView.OnItemClickListener () {
       @Override
       public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
@@ -80,26 +86,12 @@ public class EventPageFragment extends Fragment implements GoogleApiClient.Conne
         } catch (ParseException e) {
           e.printStackTrace ();
         }
-
-        Geocoder geocoder = new Geocoder(getActivity (), Locale.getDefault ());
-        List<Address> addresses = null;
-        try {
-          addresses = geocoder.getFromLocation(latitude, longitude, 1);
-        } catch (IOException e) {
-          e.printStackTrace ();
-        }
         try{
-        String cityName = addresses.get(0).getAddressLine(0);
-        String stateName = addresses.get(0).getAddressLine(1);
-        String countryName = addresses.get(0).getAddressLine(2);
         Intent intent = new Intent (getActivity (), BookRide.class);
         intent.putExtra ("summary", calendar.getSummary ());
         intent.putExtra ("location", calendar.getLocation ());
         intent.putExtra ("startTime", coolTime);
         intent.putExtra("startOrigin",calendar.start);
-        intent.putExtra ("currentLocation", cityName+"/"+stateName);
-        intent.putExtra ("longitude",longitude);
-        intent.putExtra ("latitude",latitude);
         intent.putExtra ("end",calendar.end);
         startActivity (intent);
       }catch (Exception e){
@@ -180,7 +172,10 @@ public class EventPageFragment extends Fragment implements GoogleApiClient.Conne
 
     @Override
     public int getCount() {
-      return calendars.length;
+      if(calendars != null){
+        return calendars.length;
+      }
+      return 0;
     }
 
     @Override

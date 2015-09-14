@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.plus.Plus;
+import com.squareup.picasso.Picasso;
 import com.uber.executer.Singletons.MyApp;
 import com.uber.executer.Singletons.Vars;
 import com.uber.executer.fragments.BookedEventFragment;
@@ -46,10 +47,14 @@ public class EventPage extends AppCompatActivity implements MaterialTabListener 
     mTitle.setAllCaps (false);
     Typeface tf = Typeface.createFromAsset (getAssets (),"MuseoSans_900.otf");
     mTitle.setTypeface (tf);
-    getSupportActionBar ().setDisplayHomeAsUpEnabled (false);
-    getSupportActionBar ().setDisplayShowHomeEnabled (false);
-    getSupportActionBar ().setDisplayShowTitleEnabled (false);
-
+    com.pkmmte.view.CircularImageView avatar = (com.pkmmte.view.CircularImageView)findViewById (R.id.myAvartar);
+    try {
+      Picasso.with (this).load (Vars.user.response.picture)
+              .error (R.drawable.logoone).placeholder (R.drawable.logoone)
+              .into (avatar);
+    }catch (Exception e){
+      e.printStackTrace ();
+    }
     MyPagerAdapter pagerAdapter = new MyPagerAdapter (getSupportFragmentManager ());
     pager.setAdapter (pagerAdapter);
     pager.setOnPageChangeListener (new ViewPager.SimpleOnPageChangeListener () {

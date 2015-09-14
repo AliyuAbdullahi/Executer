@@ -6,16 +6,30 @@
   android:layout_height="wrap_content"
   android:background="@color/nativeGreen"
   app:theme="@style/ToolBarThem"
-  app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+  app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+  <RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <com.pkmmte.view.CircularImageView
+      android:id="@+id/myAvartar"
+      android:layout_marginLeft="16dp"
+      android:padding = "15dp"
+      android:layout_height="50dp"
+      android:layout_width="50dp"/>
+    <TextView
+      android:layout_marginTop="10dp"
+      android:gravity="center"
+      android:layout_alignParentRight="true"
+      android:layout_alignParentLeft="true"
+      android:layout_toRightOf="@id/myAvartar"
+      android:textStyle="bold"
+      android:textSize="26sp"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Toolbar Title"
+      android:textColor="#000"
+      android:layout_gravity="center"
+      android:id="@+id/toolbar_title" />
+  </RelativeLayout>
 
- >
-  <TextView
-    android:textStyle="bold"
-    android:textSize="26sp"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Toolbar Title"
-    android:textColor="#000"
-    android:layout_gravity="center"
-    android:id="@+id/toolbar_title" />
 </android.support.v7.widget.Toolbar>

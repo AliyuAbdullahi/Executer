@@ -49,6 +49,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.plus.Plus;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.squareup.picasso.Picasso;
 import com.uber.executer.Singletons.MyApp;
 import com.uber.executer.fragments.NavFragment;
 import com.uber.executer.R;
@@ -104,9 +105,7 @@ public class BookRide extends AppCompatActivity {
     //set up toolbar
     toolbar = (Toolbar)findViewById (R.id.toolbar);
     setSupportActionBar (toolbar);
-    getSupportActionBar ().setDisplayHomeAsUpEnabled (false);
-    getSupportActionBar ().setDisplayShowHomeEnabled (false);
-    getSupportActionBar ().setDisplayShowTitleEnabled (false);
+
     TextView toolbarTitle = (TextView)findViewById (R.id.toolbar_title);
     toolbarTitle.setText ("executer");
     toolbarTitle.setAllCaps (false);
@@ -118,16 +117,21 @@ public class BookRide extends AppCompatActivity {
       e.printStackTrace ();
     }
     toolbarTitle.setTypeface (tf);
-
+    com.pkmmte.view.CircularImageView avatar = (com.pkmmte.view.CircularImageView)findViewById (R.id.myAvartar);
+    try {
+      Picasso.with (BookRide.this).load (Vars.user.response.picture)
+              .error (R.drawable.logoone).placeholder (R.drawable.logoone)
+              .into (avatar);
+    }catch (Exception e){
+      e.printStackTrace ();
+    }
     //get data from EventPageFragment and populate the view
     Intent gotten = getIntent ();
     final String end = gotten.getStringExtra ("end");
-    final double longitude = gotten.getDoubleExtra ("longitude", 0);
-    final double latitude = gotten.getDoubleExtra ("latitude", 0);
     final String location = gotten.getStringExtra ("location");
     final String summary = gotten.getStringExtra ("summary");
     final String timing = gotten.getStringExtra ("startTime");
-    final String myLocation = gotten.getStringExtra ("currentLocation");
+
     final String dataTime = gotten.getStringExtra ("startOrigin");
 
     eventTitle.setText (summary);

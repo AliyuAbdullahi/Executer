@@ -172,9 +172,9 @@ public class BookRide extends AppCompatActivity {
               String reminderTime = null;
               String address = null;
               String productString = null;
+              String id = null;
               try {
                 JSONObject object = new JSONObject (response);
-                Log.e("response",response);
                 JSONObject objectResponse = object.getJSONObject ("response");
                 Log.e ("obectResponse:", objectResponse+"");
                 JSONObject product = objectResponse.getJSONObject ("product");
@@ -221,6 +221,9 @@ public class BookRide extends AppCompatActivity {
 
             alarmManager.set (AlarmManager.RTC, System.currentTimeMillis (),
                     pendingIntent);
+
+//              alarmManager.set (AlarmManager.RTC, time,
+//                      pendingIntent);
 
 
             }

@@ -9,6 +9,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -31,6 +32,7 @@ public class EventBookedDetails extends AppCompatActivity implements MaterialTab
   MaterialTabHost tabHost;
   ViewPager pager;
   Toolbar toolbar;
+  public String id;
   public String starts;
   public String type;
   public String summary;
@@ -62,7 +64,8 @@ public class EventBookedDetails extends AppCompatActivity implements MaterialTab
       e.printStackTrace ();
     }
     Intent got = getIntent ();
-
+    id = got.getStringExtra ("id");
+    Log.e ("id",id);
     type = got.getStringExtra ("type");
     starts = got.getStringExtra ("start");
     reminder = got.getStringExtra ("reminder");

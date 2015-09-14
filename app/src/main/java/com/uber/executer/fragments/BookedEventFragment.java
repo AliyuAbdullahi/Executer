@@ -86,6 +86,7 @@ public class BookedEventFragment extends Fragment {
                       JSONObject destination = currentObject.getJSONObject ("destination");
                       bookedEventss.add (destination.getString ("address"));
                       eventBooked = new EventBooked ();
+                      eventBooked.ids = currentObject.getString ("id");
                       eventBooked.reminder = estimate.getString ("reminder");
                       eventBooked.product = product.getString ("type");
                       eventBooked.summary = destination.getString ("address");

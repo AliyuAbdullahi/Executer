@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+  <TextView
+    android:textSize="14sp"
+    android:layout_marginLeft="5dp"
+    android:text="Are you sure you want to delete item"
+    android:id="@+id/titleDelete"
+    android:layout_marginTop="25dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"/>
+  <CheckBox
+    android:padding="5dp"
+    android:layout_marginBottom="5dp"
+    android:layout_marginTop="5dp"
+    android:text="Yes delete"
+    android:layout_below="@id/titleDelete"
+    android:id="@+id/yesIamSureCheckBox"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"/>
+  <LinearLayout
+    android:layout_below="@id/yesIamSureCheckBox"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+  <Button
+    android:layout_weight="1"
+    android:text="Yes"
+    android:layout_below="@id/yesIamSureCheckBox"
+    android:id="@+id/deleteItemNow"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"/>
+ <Button
+   android:layout_weight="1"
+   android:layout_alignParentRight="true"
+   android:text="No"
+   android:layout_toRightOf="@id/deleteItemNow"
+   android:layout_below="@id/yesIamSureCheckBox"
+   android:id="@+id/noDontnow"
+   android:layout_width="wrap_content"
+   android:layout_height="wrap_content"/>
+  </LinearLayout>
+
+
+</RelativeLayout>

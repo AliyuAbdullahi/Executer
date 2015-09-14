@@ -10,4 +10,8 @@
         <item>baby b</item>
         <item>baby c</item>
     </string-array>
+    <array name="details_events">
+        <item>BOOKING DETAILS</item>
+        <item>DRIVER DETAILS</item>
+    </array>
 </resources>

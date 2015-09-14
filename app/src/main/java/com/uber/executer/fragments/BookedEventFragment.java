@@ -2,6 +2,7 @@ package com.uber.executer.fragments;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -15,13 +16,16 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -30,6 +34,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.uber.executer.R;
 import com.uber.executer.Singletons.Vars;
+import com.uber.executer.activities.EventBookedDetails;
 import com.uber.executer.models.BookedEventData;
 import com.uber.executer.models.Calendar;
 
@@ -53,6 +58,8 @@ public class BookedEventFragment extends Fragment {
   TextView noevent;
   BookedEventData[] bookedEvents;
 
+  //check internet connectivity
+
   @Nullable
   @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -60,7 +67,9 @@ public class BookedEventFragment extends Fragment {
     View view = inflater.inflate (R.layout.booked_events_new_layout, container, false);
     final String[] dataSet = new String[]{"monday", "tuesday", "wednesday"};
     bookedEventList = (ListView) view.findViewById (R.id.listOfItemsBooked);
-    bookedEventList.setAdapter (new ArrayAdapter<String> (getActivity (),R.layout.booked_event_listview_adapter,R.id.event_summary,dataSet));
+    bookedEventList.setAdapter (new ArrayAdapter<String> (getActivity ()
+            ,R.layout.booked_event_listview_adapter,R.id.event_summary,dataSet));
+
     RequestQueue queue = Volley.newRequestQueue (getActivity ());
     final StringRequest request = new StringRequest (Request.Method.GET,
             "http://andelahack.herokuapp.com/users/" + Vars.user.response.uuid + "/requests",
@@ -72,16 +81,97 @@ public class BookedEventFragment extends Fragment {
                   JSONArray resultValues = result.getJSONArray ("response");
                   for( int i = 0; i< resultValues.length (); i++){
                     JSONObject currentObject = resultValues.getJSONObject (i);
+                    JSONObject product = currentObject.getJSONObject ("product");
+                    JSONObject estimate = currentObject.getJSONObject ("estimates");
                     JSONObject destination = currentObject.getJSONObject ("destination");
                     Log.e ("destination", destination.getString ("address"));
                     bookedEventss.add (destination.getString ("address"));
                     eventBooked = new EventBooked ();
+                    eventBooked.reminder = estimate.getString ("reminder");
+                    eventBooked.product = product.getString ("type");
+                    eventBooked.ids = currentObject.getString ("id");
                     eventBooked.summary = destination.getString ("address");
                     eventBooked.starts = currentObject.getString ("startTime");
                     eventBookedArrayList.add (eventBooked);
                   }
-                  MyNewAdapter adapterNew = new MyNewAdapter (getActivity (), eventBookedArrayList);
+
+                  final MyNewAdapter adapterNew = new MyNewAdapter (getActivity (), eventBookedArrayList);
                   bookedEventList.setAdapter (adapterNew);
+                  bookedEventList.setOnItemClickListener (new AdapterView.OnItemClickListener () {
+                    @Override
+                    public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
+                      Intent eventDetails = new Intent (getActivity (), EventBookedDetails.class);
+                      eventDetails.putExtra ("start", eventBookedArrayList.get (position).starts);
+                      eventDetails.putExtra ("destination", eventBookedArrayList.get (position).summary);
+                      eventDetails.putExtra ("reminder", eventBookedArrayList.get (position).reminder);
+                      eventDetails.putExtra ("type", eventBookedArrayList.get (position).product);
+                      eventDetails.putExtra ("id", eventBookedArrayList.get (position).ids);
+                      startActivity (eventDetails);
+                    }
+                  });
+
+                  bookedEventList.setOnItemLongClickListener (new AdapterView.OnItemLongClickListener () {
+                    @Override
+                    public boolean onItemLongClick (AdapterView<?> parent, View view, final int position, long id) {
+                      final Dialog dialog = new Dialog (getActivity ());
+                      dialog.setContentView (R.layout.delete_item);
+                      TextView deleteTitle = (TextView)dialog.findViewById (R.id.titleDelete);
+                      final CheckBox sureDelete = (CheckBox)dialog.findViewById (R.id.yesIamSureCheckBox);
+                      Button yesDelete = (Button)dialog.findViewById (R.id.deleteItemNow);
+                      Button noDontDelete = (Button)dialog.findViewById (R.id.noDontnow);
+                      deleteTitle.setText ("Deleting "+eventBookedArrayList.get (position).summary+" event?");
+
+                      //delete item
+                      yesDelete.setOnClickListener (new View.OnClickListener () {
+                        @Override
+                        public void onClick (View v) {
+                          if (sureDelete.isChecked () && isOnline ()) {
+                            RequestQueue queue1 = Volley.newRequestQueue (getActivity ());
+                            StringRequest request1 = new StringRequest (Request.Method.DELETE,
+                                    "http://andelahack.herokuapp.com/users/" + Vars.user.response.uuid
+                                            + "/requests/" + eventBookedArrayList.get (position).ids,
+                                    new Response.Listener<String> () {
+                                      @Override
+                                      public void onResponse (String response) {
+                                        Toast.makeText (getActivity (), "Item deleted successfully",
+                                                Toast.LENGTH_SHORT).show ();
+                                        eventBookedArrayList.remove (position);
+                                        adapterNew.notifyDataSetChanged ();
+                                        dialog.hide ();
+                                      }
+                                    }, new Response.ErrorListener () {
+                              @Override
+                              public void onErrorResponse (VolleyError error) {
+                                Toast.makeText (getActivity (), "Please check you internet connection",
+                                        Toast.LENGTH_SHORT).show ();
+
+                              }
+                            });
+
+                            int socketTimeout = 30000;//30 seconds - change to what you want
+                            RetryPolicy policy = new DefaultRetryPolicy (socketTimeout, DefaultRetryPolicy
+                                    .DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+                            request1.setRetryPolicy (policy);
+                            queue1.add (request1);
+
+                          } else {
+                            Toast.makeText (getActivity (), "Please confirm by checking the checkbox", Toast.LENGTH_SHORT).show ();
+                          }
+
+                        }
+                      });
+
+                      //hide dialog
+                      noDontDelete.setOnClickListener (new View.OnClickListener () {
+                        @Override
+                        public void onClick (View v) {
+                          dialog.hide ();
+                        }
+                      });
+                      dialog.show ();
+                      return true;
+                    }
+                  });
                  // bookedEventList.setAdapter (new ArrayAdapter<String> (getActivity (), R.layout.booked_event_listview_adapter, R.id.event_summary, bookedEventss));
 
 //                  GsonBuilder gsonBuilder = new GsonBuilder();
@@ -106,15 +196,17 @@ public class BookedEventFragment extends Fragment {
     return view;
   }
 
+
   public void setUp (View view) {
 
   }
 
   //check if network is available
   public boolean isOnline () {
-    ConnectivityManager connectivityManager = (ConnectivityManager) getActivity ().getSystemService (Context.CONNECTIVITY_SERVICE);
+    ConnectivityManager connectivityManager = (ConnectivityManager) getActivity ()
+            .getSystemService (Context.CONNECTIVITY_SERVICE);
     NetworkInfo info = connectivityManager.getActiveNetworkInfo ();
-    if (info != null && info.isConnectedOrConnecting ()) {
+    if (info != null && info.isConnected ()) {
       return true;
     } else {
       return false;
@@ -128,6 +220,8 @@ public class BookedEventFragment extends Fragment {
     public String ids;
     public String reminder;
     public String destination;
+    public String product;
+    public String type;
   }
   public class MyNewAdapter extends BaseAdapter{
     ArrayList<EventBooked> eventBookeds;

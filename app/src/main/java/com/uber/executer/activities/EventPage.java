@@ -1,5 +1,6 @@
 package com.uber.executer.activities;
 
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,6 +16,8 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.plus.Plus;
+import com.uber.executer.Singletons.MyApp;
 import com.uber.executer.Singletons.Vars;
 import com.uber.executer.fragments.BookedEventFragment;
 import com.uber.executer.fragments.EventPageFragment;
@@ -39,7 +42,8 @@ public class EventPage extends AppCompatActivity implements MaterialTabListener 
     toolbar = (Toolbar)findViewById (R.id.toolbar);
     setSupportActionBar (toolbar);
     TextView mTitle = (TextView) toolbar.findViewById(R.id.toolbar_title);
-    mTitle.setText ("EXECUTER");
+    mTitle.setText ("executer");
+    mTitle.setAllCaps (false);
     Typeface tf = Typeface.createFromAsset (getAssets (),"MuseoSans-300.otf");
     mTitle.setTypeface (tf);
     getSupportActionBar ().setDisplayHomeAsUpEnabled (false);
@@ -72,19 +76,34 @@ public class EventPage extends AppCompatActivity implements MaterialTabListener 
   }
 
   @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
+  public boolean onOptionsItemSelected (MenuItem item) {
     // Handle action bar item clicks here. The action bar will
     // automatically handle clicks on the Home/Up button, so long
     // as you specify a parent activity in AndroidManifest.xml.
-    int id = item.getItemId();
+    int id = item.getItemId ();
 
     //noinspection SimplifiableIfStatement
-    if (id == R.id.action_settings) {
-      Toast.makeText (getApplicationContext (),"Empty for now",Toast.LENGTH_SHORT).show ();
+    if (id == R.id.logout) {
+      Vars.clearDB (getApplicationContext ());
+      Intent intent = new Intent (EventPage.this, LoginActivity.class);
+      startActivity (intent);
+      Toast.makeText (getApplicationContext (), "You have logged out", Toast.LENGTH_SHORT).show ();
       return true;
     }
+    if (id == R.id.changeAccount) {
+      revokeAccess ();
+      Intent i = new Intent (EventPage.this, MainActivity.class);
+      startActivity (i);
 
-    return super.onOptionsItemSelected(item);
+    }
+    return true;
+  }
+  public void revokeAccess(){
+    if (MyApp.mGoogleApiClient.isConnected()) {
+      Plus.AccountApi.clearDefaultAccount(MyApp.mGoogleApiClient);
+      MyApp.mGoogleApiClient.disconnect();
+      MyApp.mGoogleApiClient.connect ();
+    }
   }
 
   @Override

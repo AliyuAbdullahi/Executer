@@ -2,8 +2,13 @@
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.uber.executer.activities.EventBookedDetails">
-  <item android:id="@+id/action_settings"
-        android:title="@string/action_settings"
-        android:orderInCategory="100"
+      <item android:id="@+id/logout"
+            android:title="@string/logout"
+            android:orderInCategory="100"
+            app:showAsAction="never"/>
+
+      <item
+        android:id="@+id/changeAccount"
+        android:title="Change Account"
         app:showAsAction="never"/>
 </menu>

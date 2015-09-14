@@ -5,9 +5,11 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -29,6 +31,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
@@ -41,8 +44,12 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.plus.Plus;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.uber.executer.Singletons.MyApp;
 import com.uber.executer.fragments.NavFragment;
 import com.uber.executer.R;
 import com.uber.executer.Singletons.Vars;
@@ -61,7 +68,7 @@ import java.util.Map;
 
 public class BookRide extends AppCompatActivity {
   Events[] eventses;
-
+  GoogleApiClient mGoogleApiClient;
   TextView eventTitle;
   TextView startTimeValueOfEvent;
   TextView endTimeValueOfEvent;
@@ -70,6 +77,7 @@ public class BookRide extends AppCompatActivity {
   Spinner spinnerForUberType;
   ArrayAdapter<String> adapter;
 
+  long time;
   JSONObject locationObject;
   static final String UBER_BLACK = "UberBLACK";
   static final String UBER_X = "uberX";
@@ -83,6 +91,7 @@ public class BookRide extends AppCompatActivity {
   protected void onCreate (Bundle savedInstanceState) {
     super.onCreate (savedInstanceState);
 
+
     //set up layout
     setContentView (R.layout.activity_book_ride);
     initField ();
@@ -95,11 +104,12 @@ public class BookRide extends AppCompatActivity {
     //set up toolbar
     toolbar = (Toolbar)findViewById (R.id.toolbar);
     setSupportActionBar (toolbar);
-    getSupportActionBar ().setDisplayHomeAsUpEnabled (true);
-    getSupportActionBar ().setDisplayShowHomeEnabled (true);
+    getSupportActionBar ().setDisplayHomeAsUpEnabled (false);
+    getSupportActionBar ().setDisplayShowHomeEnabled (false);
     getSupportActionBar ().setDisplayShowTitleEnabled (false);
     TextView toolbarTitle = (TextView)findViewById (R.id.toolbar_title);
-    toolbarTitle.setText ("EXECUTER");
+    toolbarTitle.setText ("executer");
+    toolbarTitle.setAllCaps (false);
     Typeface tf = Typeface.createFromAsset (getAssets (),"MuseoSans-300.otf");
     toolbarTitle.setTypeface (tf);
 
@@ -141,29 +151,28 @@ public class BookRide extends AppCompatActivity {
     bookARide.setOnClickListener (new View.OnClickListener () {
       @Override
       public void onClick (View v) {
-
         if(isOnline ()){
-          try{
-            locationObject = new JSONObject ();
-            locationObject.put ("latitude",latitude);
-            locationObject.put("longitude",longitude);
-          }
-          catch(JSONException e){
-            e.printStackTrace ();
-          }
+
           //get pickup location text in string format
 
           RequestQueue queue = Volley.newRequestQueue (getApplicationContext ());
           StringRequest stringRequest = new StringRequest (Request.Method.POST, "http://andelahack.herokuapp.com/users/"+ Vars.user.response.uuid+"/requests", new Response.Listener<String> () {
             @Override
             public void onResponse (String response) {
-              String reminderTime;
+              String reminderTime = null;
+              String address = null;
+              String productString = null;
               try {
                 JSONObject object = new JSONObject (response);
+                Log.e("response",response);
                 JSONObject objectResponse = object.getJSONObject ("response");
-                Log.e ("Response:", response);
+                Log.e ("obectResponse:", objectResponse+"");
                 Toast.makeText (getApplicationContext (),response,Toast.LENGTH_LONG).show ();
+                JSONObject product = objectResponse.getJSONObject ("product");
                 JSONObject estimate = objectResponse.getJSONObject ("estimates");
+                productString = product.getString ("type");
+                JSONObject destinationObj = objectResponse.getJSONObject ("destination");
+                address = destinationObj.getString ("address");
                 Toast.makeText (getApplicationContext (),estimate+"",Toast.LENGTH_LONG).show ();
                 Log.e("Estimates: ",estimate+"");
                 reminderTime = estimate.getString ("reminder");
@@ -172,12 +181,28 @@ public class BookRide extends AppCompatActivity {
                 e.printStackTrace ();
               }
 
+
+              try {
+                String timeFormatter = reminderTime.split("\\+")[0];
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                Date date = sdf.parse (timeFormatter);
+                time = date.getTime ();
+              } catch (ParseException e) {
+                e.printStackTrace ();
+              }
               Intent myIntent = new Intent(BookRide.this, AlarmReciever.class);
+              myIntent.putExtra ("type",productString);
+              myIntent.putExtra ("start",dataTime);
+              myIntent.putExtra ("reminder", reminderTime);
+              myIntent.putExtra ("destination",address);
+
 
               PendingIntent pendingIntent = PendingIntent.getBroadcast(BookRide.this,
                     0, myIntent, 0);
 
-            AlarmManager alarmManager = (AlarmManager)getApplicationContext (). getSystemService (Context.ALARM_SERVICE);
+              Log.e ("formatted", time + "");
+
+              AlarmManager alarmManager = (AlarmManager)getApplicationContext (). getSystemService (Context.ALARM_SERVICE);
 
             /*
              * The following sets the Alarm in the specific time by getting the long
@@ -204,7 +229,7 @@ public class BookRide extends AppCompatActivity {
               params.put("destination",eventDestination.getText ().toString ());
               params.put("startTime",dataTime);
               params.put("productType",spinnerForUberType.getSelectedItem ().toString ());
-              params.put("location", locationObject.toString ());
+              params.put ("location",pickUpLocation.getText ().toString ());
               return params;
             }
 
@@ -264,24 +289,37 @@ public class BookRide extends AppCompatActivity {
 
 
   @Override
-  public boolean onOptionsItemSelected (MenuItem item) {
+    public boolean onOptionsItemSelected (MenuItem item) {
     // Handle action bar item clicks here. The action bar will
     // automatically handle clicks on the Home/Up button, so long
     // as you specify a parent activity in AndroidManifest.xml.
     int id = item.getItemId ();
 
     //noinspection SimplifiableIfStatement
-    if (id == R.id.action_settings) {
-      Toast.makeText (getApplicationContext (),"Empty for now",Toast.LENGTH_SHORT).show ();
+    if (id == R.id.logout) {
+      Vars.clearDB (getApplicationContext ());
+      Intent intent = new Intent (BookRide.this, LoginActivity.class);
+      startActivity (intent);
+      Toast.makeText (getApplicationContext (), "You have logged out", Toast.LENGTH_SHORT).show ();
       return true;
     }
+    if (id == R.id.changeAccount) {
+      revokeAccess ();
+      Intent i = new Intent (BookRide.this, MainActivity.class);
+      startActivity (i);
 
-    return super.onOptionsItemSelected (item);
+    }
+    return true;
   }
-
+  public void revokeAccess(){
+    if (MyApp.mGoogleApiClient.isConnected()) {
+      Plus.AccountApi.clearDefaultAccount(MyApp.mGoogleApiClient);
+      MyApp.mGoogleApiClient.disconnect();
+      MyApp.mGoogleApiClient.connect();
+    }
+  }
   private void toastMessage(String message){
     Toast.makeText (this, message, Toast.LENGTH_SHORT).show ();
   }
-
 
 }

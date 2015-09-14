@@ -26,13 +26,16 @@ import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.plus.Plus;
 import com.google.api.services.calendar.CalendarScopes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.picasso.Picasso;
 import com.uber.executer.R;
+import com.uber.executer.Singletons.MyApp;
 import com.uber.executer.Singletons.Vars;
 import com.uber.executer.models.Calendar;
 import com.uber.executer.models.User;
@@ -80,12 +83,13 @@ public class MainActivity extends Activity implements
   }
 
   private void init() {
+
     mAuthProgressDialog = new ProgressDialog(this);
     mAuthProgressDialog.setMessage("Loading...");
-    mAuthProgressDialog.setCancelable(false);
+    mAuthProgressDialog.setCancelable (false);
 
     mGoogleLoginButton = (ImageButton) findViewById(R.id.google_plus_button);
-    mGoogleLoginButton.setOnClickListener(this);
+    mGoogleLoginButton.setOnClickListener (this);
 
     mGoogleApiClient = new GoogleApiClient.Builder(this)
             .addConnectionCallbacks (this)
@@ -201,10 +205,18 @@ public class MainActivity extends Activity implements
     task.execute();
   }
 
-
+  public GoogleApiClient buildApiClient(){
+    return new GoogleApiClient.Builder(this)
+            .addConnectionCallbacks (this)
+            .addOnConnectionFailedListener (this)
+            .addApi (Plus.API)
+            .addScope (Plus.SCOPE_PLUS_LOGIN)
+            .build ();
+  }
   @Override
   public void onConnected(final Bundle bundle) {
-    loginAndGetToken();
+    MyApp.mGoogleApiClient = this.mGoogleApiClient;
+    loginAndGetToken ();
   }
 
   @Override
@@ -236,6 +248,15 @@ public class MainActivity extends Activity implements
     if (!mGoogleApiClient.isConnecting()) {
       mGoogleApiClient.connect();
     }
+  }
+  public void signOut(){
+    Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+    // Our sample has caches no user data from Google+, however we
+    // would normally register a callback on revokeAccessAndDisconnect
+    // to delete user data so that we comply with Google developer
+    // policies.
+    Plus.AccountApi.revokeAccessAndDisconnect(mGoogleApiClient);
+    mGoogleApiClient.connect();
   }
 
   @Override

@@ -35,7 +35,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:textAppearance="?android:attr/textAppearanceLarge"
-    android:text="EXECUTER"
+    android:text="executer"
     android:id="@+id/executer_text1"
     android:layout_above="@+id/powered_uber"
     android:layout_centerHorizontal="true"/>

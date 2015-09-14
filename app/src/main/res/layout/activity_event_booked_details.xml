@@ -7,6 +7,7 @@
   tools:context="com.uber.executer.activities.EventBookedDetails">
 
   <include layout="@layout/toolbar"
+           android:id="@+id/toolbar"
            android:layout_height="wrap_content"
            android:layout_width="match_parent"/>
   <TextView
@@ -92,9 +93,9 @@
     android:id="@+id/materialTabHostOne"
     android:layout_width="match_parent"
     android:layout_height="48dp"
-    app:textColor="#FFFFFF"
-    app:primaryColor="#009688"
-    app:accentColor="#f06292"
+    app:textColor="@color/colorTextPrimary"
+    app:primaryColor="#B2EBF2"
+    app:accentColor="@color/colorAccent"
     />
 
   <android.support.v4.view.ViewPager
@@ -106,11 +107,10 @@
   <Button
     android:layout_gravity="center_horizontal"
     android:gravity="center_horizontal"
-    android:background="@drawable/book_ride_button"
+    android:background="@drawable/cancel_booking"
     android:layout_marginTop="30dp"
     android:id="@+id/bookeRideNow"
     android:layout_width="300dp"
     android:layout_height="70dp"/>
 
 </LinearLayout>
-

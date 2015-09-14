@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="arsh">#EEEEEE</color>
-    <color name="colorPrimary">#FF5722</color>
+    <color name="colorPrimary">#0097A7</color>
+    <color name="colorAccent">#607D8B</color>
+
+    <color name="colorPrimaryDark">#60009688</color>
+    <color name="android:divider">#B6B6B6</color>
+    <color name="android:textColorPrimary">#212121</color>
+    <color name="android:textColorSecondary">#727272</color>
     <color name="colorOrange1">#FFAC00</color>
     <color name="colorOrange2">#FFD000</color>
     <color name="colorGreen1">#52CC57</color>
     <color name="colorBlue1">#00B0DC</color>
-    <color name="colorPrimaryDark">#E64A19</color>
     <color name="colorPrimaryLight">#FFCCBC</color>
     <color name="colorGrey">#999999</color>
     <color name="colorLightGrey">#F4F4F4</color>
-    <color name="colorAccent">#9E9E9E</color>
     <color name="colorTextPrimary">#212121</color>
     <color name="colorTextSecondary">#727272</color>
     <color name="colorDivider">#B6B6B6</color>
     <color name="colorWhite">#ffffff</color>
     <color name="nativeGreen">#20A6B4</color>
+
 </resources>

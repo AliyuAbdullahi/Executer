@@ -37,6 +37,9 @@ public class EventPage extends AppCompatActivity implements MaterialTabListener 
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate (savedInstanceState);
     setContentView (R.layout.activity_event_page);
+    if (getIntent().getBooleanExtra("EXIT", false)) {
+      this.moveTaskToBack(true);
+    }
     pager = (ViewPager)findViewById (R.id.pager);
     tabHost = (MaterialTabHost) this.findViewById (R.id.materialTabHost);
   //  Toast.makeText (getApplicationContext (), Vars.user.response.google_token.toString (),Toast.LENGTH_LONG).show ();
@@ -153,5 +156,14 @@ public class EventPage extends AppCompatActivity implements MaterialTabListener 
     public CharSequence getPageTitle (int position) {
       return getResources ().getStringArray (R.array.tabs)[position];
     }
+
+  }
+
+  @Override
+  public void onBackPressed () {
+    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    intent.putExtra("EXIT", true);
+    startActivity(intent);
   }
 }

@@ -91,6 +91,7 @@ public class LoginActivity extends AppCompatActivity {
   }
 
   private void uberAuth() {
+
     final Activity self = this;
     webView = (WebView) authenticationDialog.findViewById(R.id.authWebView);
     webView.setWebViewClient(new WebViewClient () {

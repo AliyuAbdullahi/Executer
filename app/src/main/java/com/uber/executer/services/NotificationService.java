@@ -34,7 +34,7 @@ public class NotificationService extends Service {
   @Override
   public void onStart (Intent intent, int startId) {
     super.onStart (intent, startId);
-
+    String id = intent.getStringExtra ("id");
     String reminderTime = intent.getStringExtra ("start");
     String address = intent.getStringExtra ("destination");
     String productString = intent.getStringExtra ("type");
@@ -56,6 +56,7 @@ public class NotificationService extends Service {
     notificationIntent.putExtra ("destination", address);
     notificationIntent.putExtra ("reminder", reminder);
     notificationIntent.putExtra ("type", productString);
+    notificationIntent.putExtra ("id",id);
     PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
     notification.contentIntent = contentIntent;
 

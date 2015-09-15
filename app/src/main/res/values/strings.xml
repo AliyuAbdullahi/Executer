@@ -31,4 +31,5 @@ Seats up to six people in style.</string>
   </string-array>
   <string name="title_activity_event_booked_details">EventBookedDetails</string>
   <string name="logout">logout</string>
+  <string name="pref_previously_started">seen already</string>
 </resources>

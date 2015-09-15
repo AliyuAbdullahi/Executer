@@ -2,13 +2,18 @@ package com.uber.executer.activities;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,6 +55,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Handler;
+
+import static android.app.ProgressDialog.*;
 
 
 public class MainActivity extends Activity implements
@@ -62,6 +70,15 @@ public class MainActivity extends Activity implements
   private GoogleApiClient mGoogleApiClient;
   public  static Calendar[] calendars;
   private boolean mGoogleIntentInProgress;
+
+
+  public static final String PREFS_NAME = "MyPrefsFile";
+  public ImageView myAnimation;
+  private static final String SHARED_PREFERENCE_NAME = "mySharedPreference" ;
+  private boolean fromSavedInstanceState;
+  private boolean activityIsIdentified;
+  public static final String ACTIVITY_CAUGHT_RED_HANDED = "i_know_about_you_already";
+
   private boolean mGoogleLoginClicked;
   private ConnectionResult mGoogleConnectionResult;
 
@@ -70,13 +87,36 @@ public class MainActivity extends Activity implements
   private ProgressDialog mAuthProgressDialog;
 
   @Override
+  protected void onStart () {
+    super.onStart ();
+    SharedPreferences settings = getSharedPreferences(MainActivity.PREFS_NAME, 0);
+//Get "hasLoggedIn" value. If the value doesn't exist yet false is returned
+    boolean hasLoggedIn = settings.getBoolean("hasLoggedIn", false);
+
+    if(hasLoggedIn)
+    {
+      Intent intent = new Intent (MainActivity.this, EventPage.class);
+      startActivity (intent);
+      MainActivity.this.finish();
+      //Go directly to main activity.
+    }
+  }
+
+  @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate (savedInstanceState);
+
+    activityIsIdentified = Boolean.valueOf (readFromPreference (getApplicationContext (),ACTIVITY_CAUGHT_RED_HANDED,"false"));
     if (getIntent().getBooleanExtra("EXIT", false)) {
       this.moveTaskToBack(true);
     }
-    setContentView (R.layout.activity_main);
+    if(savedInstanceState != null){
+      fromSavedInstanceState = true;
+    }
 
+    setContentView (R.layout.activity_main);
+    myAnimation = (ImageView)findViewById (R.id.progressAnimation);
+    myAnimation.setVisibility (View.INVISIBLE);
     welcome = (TextView)findViewById (R.id.welcomeTextView);
     try{
       welcome.setText ("Welcome " + Vars.user.response.first_name + " "+Vars.user.response.last_name);
@@ -86,16 +126,20 @@ public class MainActivity extends Activity implements
       e.printStackTrace ();
     }
     avatar = (com.pkmmte.view.CircularImageView)findViewById (R.id.avatar);
-    Picasso.with (this).load (Vars.user.response.picture)
-            .error (R.drawable.logoone).placeholder (R.drawable.logoone)
-            .into (avatar);
+try {
+  Picasso.with (this).load (Vars.user.response.picture)
+          .error (R.drawable.logoone).placeholder (R.drawable.logoone)
+          .into (avatar);
+}catch (Exception e){
+  e.printStackTrace ();
+}
     init ();
   }
 
   private void init() {
 
     mAuthProgressDialog = new ProgressDialog(this);
-    mAuthProgressDialog.setMessage("Loading...");
+    mAuthProgressDialog.setMessage ("Loading...");
     mAuthProgressDialog.setCancelable (false);
 
     mGoogleLoginButton = (ImageButton) findViewById(R.id.google_plus_button);
@@ -162,39 +206,43 @@ public class MainActivity extends Activity implements
         mGoogleLoginClicked = false;
         mAuthProgressDialog.hide();
         if (token != null) {
-          Log.v("token", token);
+          Log.v ("token", token);
+          try{
           RequestQueue queue = Volley.newRequestQueue (MainActivity.this);
-          final StringRequest request = new StringRequest (Request.Method.POST, "http://andelahack.herokuapp.com/"+Vars.user.response.uuid+"/calendar/ ", new Response.Listener<String> () {
-            @Override
-            public void onResponse (String response) {
+          final StringRequest request = new StringRequest (Request.Method.POST,
+                  "http://andelahack.herokuapp.com/" + Vars.user.response.uuid + "/calendar/ ",
+                  new Response.Listener<String> () {
+                    @Override
+                    public void onResponse (String response) {
 
-              try {
-                JSONObject result = new JSONObject (response);
-                JSONArray resultValues = result.getJSONArray ("response");
-                GsonBuilder gsonBuilder = new GsonBuilder();
-                Gson gson = gsonBuilder.create();
-                calendars = gson.fromJson (String.valueOf (resultValues), Calendar[].class);
-                Intent intent = new Intent (MainActivity.this, EventPage.class);
-                startActivity (intent);
-                overridePendingTransition( R.anim.slide_in_right,R.anim.slide_out_left);
-              } catch (JSONException e) {
-                e.printStackTrace ();
-              }
+                      try {
+                        JSONObject result = new JSONObject (response);
+                        JSONArray resultValues = result.getJSONArray ("response");
+                        GsonBuilder gsonBuilder = new GsonBuilder ();
+                        Gson gson = gsonBuilder.create ();
+                        calendars = gson.fromJson (String.valueOf (resultValues), Calendar[].class);
+                        Intent intent = new Intent (MainActivity.this, EventPage.class);
+                        startActivity (intent);
+                        overridePendingTransition (R.anim.slide_in_right, R.anim.slide_out_left);
+                        finish ();
+                      } catch (JSONException e) {
+                        e.printStackTrace ();
+                      }
 
-            }
-          }, new Response.ErrorListener () {
+                    }
+                  }, new Response.ErrorListener () {
             @Override
             public void onErrorResponse (VolleyError error) {
-              Toast.makeText (getApplicationContext (), error+"",Toast.LENGTH_LONG).show ();
+              Toast.makeText (getApplicationContext (), error + "", Toast.LENGTH_LONG).show ();
 
             }
-          }){
+          }) {
             @Override
             protected Map<String, String> getParams () throws AuthFailureError {
               super.getParams ();
-              Map<String,String> params = new HashMap<String, String> ();
-              params.put("refreshToken","");
-              params.put("accessToken",token);
+              Map<String, String> params = new HashMap<String, String> ();
+              params.put ("refreshToken", "");
+              params.put ("accessToken", token);
               return params;
 
             }
@@ -202,17 +250,20 @@ public class MainActivity extends Activity implements
             @Override
             public Map<String, String> getHeaders () throws AuthFailureError {
               super.getHeaders ();
-              Map<String,String> params = new HashMap<String, String>();
-              params.put("Content-Type","application/x-www-form-urlencoded");
+              Map<String, String> params = new HashMap<String, String> ();
+              params.put ("Content-Type", "application/x-www-form-urlencoded");
               return params;
             }
           };
 
           int socketTimeout = 30000;//30 seconds - change to what you want
           RetryPolicy policy = new DefaultRetryPolicy (socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-          request.setRetryPolicy(policy);
+          request.setRetryPolicy (policy);
 
           queue.add (request);
+        }catch(Exception e){
+          e.printStackTrace ();
+        }
         } else if (errorMessage != null) {
 
         }
@@ -276,26 +327,53 @@ public class MainActivity extends Activity implements
   public void onBackPressed () {
     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-    intent.putExtra("EXIT", true);
-    startActivity(intent);
+    intent.putExtra ("EXIT", true);
+    startActivity (intent);
   }
 
   @Override
   public void onClick(View v) {
+      //
     switch (v.getId()) {
       case R.id.google_plus_button:
         mGoogleLoginClicked = true;
+        myAnimation.setVisibility (View.VISIBLE);
+        ((AnimationDrawable) myAnimation.getBackground()).start ();
+
         if (!mGoogleApiClient.isConnecting()) {
           if (mGoogleConnectionResult != null) {
             resolveSignInError();
           } else if (mGoogleApiClient.isConnected()) {
-            loginAndGetToken();
+            final ProgressDialog dialog = ProgressDialog.show(this, "", "Syncing...",
+                    true);
+            dialog.show ();
+            android.os.Handler handler = new android.os.Handler ();
+            handler.postDelayed (new Runnable () {
+              public void run () {
+                dialog.dismiss ();
+                Toast.makeText (getApplicationContext (), "Google is Connected!", Toast.LENGTH_SHORT).show ();
+                loginAndGetToken ();
+              }
+            }, 2000);
+
           } else {
+            Toast.makeText (getApplicationContext (),"Connecting...", Toast.LENGTH_SHORT).show ();
             Log.d(TAG, "Trying to connect to Google API");
             mGoogleApiClient.connect();
           }
         }
         break;
     }
+
+  }
+  public void saveToPreference(Context context, String preferenceName, String preferenceValue){
+    SharedPreferences sharedPreferences = context.getSharedPreferences (SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE);
+    SharedPreferences.Editor editor = sharedPreferences.edit ();
+    editor.putString (preferenceName, preferenceValue);
+    editor.apply ();
+  }
+  public String readFromPreference (Context context, String preferenceName, String preferenceValue){
+    SharedPreferences sharedPreferences = context.getSharedPreferences (SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE);
+    return sharedPreferences.getString (preferenceName, preferenceValue);
   }
 }

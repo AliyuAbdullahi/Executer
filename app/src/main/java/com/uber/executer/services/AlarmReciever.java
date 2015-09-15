@@ -11,6 +11,7 @@ public class AlarmReciever extends BroadcastReceiver {
 
   @Override
   public void onReceive (Context context, Intent intent) {
+    String productId = intent.getStringExtra ("id");
     String reminderTime = intent.getStringExtra ("start");
     String address = intent.getStringExtra ("destination");
     String productString = intent.getStringExtra ("type");
@@ -20,6 +21,8 @@ public class AlarmReciever extends BroadcastReceiver {
     myIntent.putExtra ("destination", address);
     myIntent.putExtra ("type", productString);
     myIntent.putExtra ("reminder", reminder);
+    myIntent.putExtra ("id", productId);
+
     context.startService(myIntent);
   }
 }

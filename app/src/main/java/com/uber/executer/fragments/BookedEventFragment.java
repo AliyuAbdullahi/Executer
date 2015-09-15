@@ -99,6 +99,7 @@ public class BookedEventFragment extends Fragment {
                     bookedEventList.setOnItemClickListener (new AdapterView.OnItemClickListener () {
                       @Override
                       public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
+                        try{
                         Intent eventDetails = new Intent (getActivity (), EventBookedDetails.class);
                         eventDetails.putExtra ("start", eventBookedArrayList.get (position).starts);
                         eventDetails.putExtra ("destination", eventBookedArrayList.get (position).summary);
@@ -106,68 +107,77 @@ public class BookedEventFragment extends Fragment {
                         eventDetails.putExtra ("type", eventBookedArrayList.get (position).product);
                         eventDetails.putExtra ("id", eventBookedArrayList.get (position).ids);
                         startActivity (eventDetails);
+                        }catch (Exception e){
+                          e.printStackTrace ();
+                        }
                       }
                     });
 
                     bookedEventList.setOnItemLongClickListener (new AdapterView.OnItemLongClickListener () {
                       @Override
                       public boolean onItemLongClick (AdapterView<?> parent, View view, final int position, long id) {
-                        final Dialog dialog = new Dialog (getActivity ());
-                        dialog.setContentView (R.layout.delete_item);
-                        TextView deleteTitle = (TextView) dialog.findViewById (R.id.titleDelete);
-                        final CheckBox sureDelete = (CheckBox) dialog.findViewById (R.id.yesIamSureCheckBox);
-                        Button yesDelete = (Button) dialog.findViewById (R.id.deleteItemNow);
-                        Button noDontDelete = (Button) dialog.findViewById (R.id.noDontnow);
-                        deleteTitle.setText ("Deleting " + eventBookedArrayList.get (position).summary + " event?");
+                        try {
+                          final Dialog dialog = new Dialog (getActivity ());
+                          dialog.setContentView (R.layout.delete_item);
+                          TextView deleteTitle = (TextView) dialog.findViewById (R.id.titleDelete);
+                          final CheckBox sureDelete = (CheckBox) dialog.findViewById (R.id.yesIamSureCheckBox);
+                          Button yesDelete = (Button) dialog.findViewById (R.id.deleteItemNow);
+                          Button noDontDelete = (Button) dialog.findViewById (R.id.noDontnow);
+                          deleteTitle.setText ("Deleting " + eventBookedArrayList.get (position).summary + " event?");
 
-                        //delete item
-                        yesDelete.setOnClickListener (new View.OnClickListener () {
-                          @Override
-                          public void onClick (View v) {
-                            if (sureDelete.isChecked () && isOnline ()) {
-                              RequestQueue queue1 = Volley.newRequestQueue (getActivity ());
-                              StringRequest request1 = new StringRequest (Request.Method.DELETE,
-                                      "http://andelahack.herokuapp.com/users/" + Vars.user.response.uuid
-                                              + "/requests/" + eventBookedArrayList.get (position).ids,
-                                      new Response.Listener<String> () {
-                                        @Override
-                                        public void onResponse (String response) {
-                                          Toast.makeText (getActivity (), "Item deleted successfully",
-                                                  Toast.LENGTH_SHORT).show ();
-                                          eventBookedArrayList.remove (position);
-                                          adapterNew.notifyDataSetChanged ();
-                                          dialog.hide ();
-                                        }
-                                      }, new Response.ErrorListener () {
-                                @Override
-                                public void onErrorResponse (VolleyError error) {
-                                  Toast.makeText (getActivity (), "Please check you internet connection",
-                                          Toast.LENGTH_SHORT).show ();
+                          //delete item
+                          yesDelete.setOnClickListener (new View.OnClickListener () {
+                            @Override
+                            public void onClick (View v) {
+                              if (sureDelete.isChecked () && isOnline ()) {
+                                RequestQueue queue1 = Volley.newRequestQueue (getActivity ());
+                                StringRequest request1 = new StringRequest (Request.Method.DELETE,
+                                        "http://andelahack.herokuapp.com/users/" + Vars.user.response.uuid
+                                                + "/requests/" + eventBookedArrayList.get (position).ids,
+                                        new Response.Listener<String> () {
+                                          @Override
+                                          public void onResponse (String response) {
+                                            Toast.makeText (getActivity (), "Item deleted successfully",
+                                                    Toast.LENGTH_SHORT).show ();
+                                            eventBookedArrayList.remove (position);
+                                            adapterNew.notifyDataSetChanged ();
+                                            dialog.hide ();
+                                          }
+                                        }, new Response.ErrorListener () {
+                                  @Override
+                                  public void onErrorResponse (VolleyError error) {
+                                    Toast.makeText (getActivity (), "Please check you internet connection",
+                                            Toast.LENGTH_SHORT).show ();
 
-                                }
-                              });
+                                  }
+                                });
 
-                              int socketTimeout = 30000;//30 seconds - change to what you want
-                              RetryPolicy policy = new DefaultRetryPolicy (socketTimeout, DefaultRetryPolicy
-                                      .DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-                              request1.setRetryPolicy (policy);
-                              queue1.add (request1);
+                                int socketTimeout = 30000;//30 seconds - change to what you want
+                                RetryPolicy policy = new DefaultRetryPolicy (socketTimeout, DefaultRetryPolicy
+                                        .DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+                                request1.setRetryPolicy (policy);
+                                queue1.add (request1);
 
-                            } else {
-                              Toast.makeText (getActivity (), "Please confirm by checking the checkbox", Toast.LENGTH_SHORT).show ();
+                              } else {
+                                Toast.makeText (getActivity (), "Please confirm by checking the checkbox", Toast.LENGTH_SHORT).show ();
+                              }
+
                             }
+                          });
 
-                          }
-                        });
+                          //hide dialog
+                          noDontDelete.setOnClickListener (new View.OnClickListener () {
+                            @Override
+                            public void onClick (View v) {
+                              dialog.hide ();
+                            }
+                          });
+                          dialog.show ();
 
-                        //hide dialog
-                        noDontDelete.setOnClickListener (new View.OnClickListener () {
-                          @Override
-                          public void onClick (View v) {
-                            dialog.hide ();
-                          }
-                        });
-                        dialog.show ();
+
+                        }catch (Exception e){
+                          e.printStackTrace ();
+                        }
                         return true;
                       }
                     });

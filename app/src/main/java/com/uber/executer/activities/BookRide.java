@@ -79,11 +79,6 @@ public class BookRide extends AppCompatActivity {
   ArrayAdapter<String> adapter;
 
   long time;
-  JSONObject locationObject;
-  static final String UBER_BLACK = "UberBLACK";
-  static final String UBER_X = "uberX";
-  static final String UBER_TAXI = "UberSUV";
-
   Toolbar toolbar;
   Button bookARide;
   NotificationManager manager;
@@ -91,7 +86,6 @@ public class BookRide extends AppCompatActivity {
   @Override
   protected void onCreate (Bundle savedInstanceState) {
     super.onCreate (savedInstanceState);
-
 
     //set up layout
     setContentView (R.layout.activity_book_ride);
@@ -140,8 +134,6 @@ public class BookRide extends AppCompatActivity {
     endTimeValueOfEvent.setText (end);
     spinnerForUberType = (Spinner)findViewById (R.id.spinner_for_uber_type);
 
-
-
     List<String> list;
 
     list = new ArrayList<String> ();
@@ -154,7 +146,7 @@ public class BookRide extends AppCompatActivity {
     adapter = new ArrayAdapter<String>(getApplicationContext(),
             android.R.layout.simple_spinner_item, list);
     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-    spinnerForUberType.setAdapter(adapter);
+    spinnerForUberType.setAdapter (adapter);
 
 
     bookARide = (Button)findViewById (R.id.bookeRideNow);
@@ -164,53 +156,63 @@ public class BookRide extends AppCompatActivity {
         if(isOnline ()){
 
           //get pickup location text in string format
+         if(pickUpLocation.getText ().toString ().equals ("")){
+           Toast.makeText (getApplicationContext (), "Please Enter a valid location!", Toast.LENGTH_SHORT).show ();
+           if(eventDestination.getText ().toString ().equals ("")){
+             Toast.makeText (getApplicationContext (), "Please Enter a valid destination", Toast.LENGTH_SHORT).show ();
+           }
 
-          RequestQueue queue = Volley.newRequestQueue (getApplicationContext ());
-          StringRequest stringRequest = new StringRequest (Request.Method.POST, "http://andelahack.herokuapp.com/users/"+ Vars.user.response.uuid+"/requests", new Response.Listener<String> () {
-            @Override
-            public void onResponse (String response) {
-              String reminderTime = null;
-              String address = null;
-              String productString = null;
-              String id = null;
-              try {
-                JSONObject object = new JSONObject (response);
-                JSONObject objectResponse = object.getJSONObject ("response");
-                Log.e ("obectResponse:", objectResponse+"");
-                JSONObject product = objectResponse.getJSONObject ("product");
-                JSONObject estimate = objectResponse.getJSONObject ("estimates");
-                productString = product.getString ("type");
-                JSONObject destinationObj = objectResponse.getJSONObject ("destination");
-                address = destinationObj.getString ("address");
-                Log.e("Estimates: ",estimate+"");
-                reminderTime = estimate.getString ("reminder");
-                Log.e ("reminder", reminderTime);
-              } catch (JSONException e) {
-                e.printStackTrace ();
-              }
+         }
+         else {
+           RequestQueue queue = Volley.newRequestQueue (getApplicationContext ());
+           StringRequest stringRequest = new StringRequest (Request.Method.POST,
+                   "http://andelahack.herokuapp.com/users/"+ Vars.user.response.uuid+"/requests",
+                   new Response.Listener<String> () {
+                     @Override
+                     public void onResponse (String response) {
+                       String reminderTime = null;
+                       String address = null;
+                       String productString = null;
+                       String id = null;
+                       String productId = null;
+                       try {
+                         JSONObject object = new JSONObject (response);
+                         JSONObject objectResponse = object.getJSONObject ("response");
+                         Log.e ("obectResponse:", objectResponse+"");
+                         JSONObject product = objectResponse.getJSONObject ("product");
+                         JSONObject estimate = objectResponse.getJSONObject ("estimates");
+                         productString = product.getString ("type");
+                         productId = objectResponse.getString ("id");
+                         JSONObject destinationObj = objectResponse.getJSONObject ("destination");
+                         address = destinationObj.getString ("address");
+                         Log.e("Id: ",productId+"");
+                         reminderTime = estimate.getString ("reminder");
+                         Log.e ("reminder", reminderTime);
+                       } catch (JSONException e) {
+                         e.printStackTrace ();
+                       }
 
+                       try {
+                         String timeFormatter = reminderTime.split("\\+")[0];
+                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                         Date date = sdf.parse (timeFormatter);
+                         time = date.getTime ();
+                       } catch (ParseException e) {
+                         e.printStackTrace ();
+                       }
+                       Intent myIntent = new Intent(BookRide.this, AlarmReciever.class);
+                       myIntent.putExtra ("type",productString);
+                       myIntent.putExtra ("start",dataTime);
+                       myIntent.putExtra ("reminder", reminderTime);
+                       myIntent.putExtra ("destination",address);
+                       myIntent.putExtra ("id", productId);
 
-              try {
-                String timeFormatter = reminderTime.split("\\+")[0];
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                Date date = sdf.parse (timeFormatter);
-                time = date.getTime ();
-              } catch (ParseException e) {
-                e.printStackTrace ();
-              }
-              Intent myIntent = new Intent(BookRide.this, AlarmReciever.class);
-              myIntent.putExtra ("type",productString);
-              myIntent.putExtra ("start",dataTime);
-              myIntent.putExtra ("reminder", reminderTime);
-              myIntent.putExtra ("destination",address);
+                       PendingIntent pendingIntent = PendingIntent.getBroadcast(BookRide.this,
+                               0, myIntent, 0);
 
+                       Log.e ("formatted", time + "");
 
-              PendingIntent pendingIntent = PendingIntent.getBroadcast(BookRide.this,
-                    0, myIntent, 0);
-
-              Log.e ("formatted", time + "");
-
-              AlarmManager alarmManager = (AlarmManager)getApplicationContext (). getSystemService (Context.ALARM_SERVICE);
+                       AlarmManager alarmManager = (AlarmManager)getApplicationContext (). getSystemService (Context.ALARM_SERVICE);
 
             /*
              * The following sets the Alarm in the specific time by getting the long
@@ -219,44 +221,47 @@ public class BookRide extends AppCompatActivity {
              * using this method.
              */
 
-            alarmManager.set (AlarmManager.RTC, System.currentTimeMillis (),
-                    pendingIntent);
+                       alarmManager.set (AlarmManager.RTC, System.currentTimeMillis (),
+                               pendingIntent);
 
 //              alarmManager.set (AlarmManager.RTC, time,
 //                      pendingIntent);
 
+                     }
+                   }, new Response.ErrorListener () {
+             @Override
+             public void onErrorResponse (VolleyError error) {
+               Toast.makeText (getApplicationContext (), "Error: " +error,Toast.LENGTH_LONG).show ();
+             }
+           }){
+             @Override
+             protected Map<String, String> getParams () throws AuthFailureError {
+               super.getParams ();
+               Map<String,String> params = new HashMap<String, String> ();
+               params.put("destination",eventDestination.getText ().toString ());
+               params.put("startTime",dataTime);
+               params.put("productType",spinnerForUberType.getSelectedItem ().toString ());
+               params.put ("location",pickUpLocation.getText ().toString ());
+               return params;
+             }
 
-            }
-          }, new Response.ErrorListener () {
-            @Override
-            public void onErrorResponse (VolleyError error) {
-              Toast.makeText (getApplicationContext (), "Error: " +error,Toast.LENGTH_LONG).show ();
-            }
-          }){
-            @Override
-            protected Map<String, String> getParams () throws AuthFailureError {
-              super.getParams ();
-              Map<String,String> params = new HashMap<String, String> ();
-              params.put("destination",eventDestination.getText ().toString ());
-              params.put("startTime",dataTime);
-              params.put("productType",spinnerForUberType.getSelectedItem ().toString ());
-              params.put ("location",pickUpLocation.getText ().toString ());
-              return params;
-            }
+             @Override
+             public Map<String, String> getHeaders () throws AuthFailureError {
+               super.getHeaders ();
+               Map<String,String> params = new HashMap<String, String>();
+               params.put("Content-Type","application/x-www-form-urlencoded");
+               return params;
+             }
+           };
+           int socketTimeout = 30000;//30 seconds - change to what you want
+           RetryPolicy policy = new DefaultRetryPolicy (socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+           stringRequest.setRetryPolicy(policy);
 
-            @Override
-            public Map<String, String> getHeaders () throws AuthFailureError {
-              super.getHeaders ();
-              Map<String,String> params = new HashMap<String, String>();
-              params.put("Content-Type","application/x-www-form-urlencoded");
-              return params;
-            }
-          };
-          int socketTimeout = 30000;//30 seconds - change to what you want
-          RetryPolicy policy = new DefaultRetryPolicy (socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-          stringRequest.setRetryPolicy(policy);
+           queue.add (stringRequest);
 
-          queue.add (stringRequest);
+         }
+
+
         }
         else {
           Toast.makeText (BookRide.this, "Enable network connection", Toast.LENGTH_SHORT).show ();
@@ -264,7 +269,6 @@ public class BookRide extends AppCompatActivity {
       }
     });
     //setup taxies
-
 
   }
   public void initField(){
@@ -283,6 +287,7 @@ public class BookRide extends AppCompatActivity {
     if (info != null && info.isConnectedOrConnecting ()) {
       return true;
     } else {
+      Toast.makeText (getApplicationContext (),"Check your internet connection", Toast.LENGTH_SHORT).show ();
       return false;
     }
 
@@ -298,6 +303,12 @@ public class BookRide extends AppCompatActivity {
     return calendars[position];
   }
 
+  @Override
+  public void onBackPressed () {
+    Intent i = new Intent (BookRide.this, EventPage.class);
+    startActivity (i);
+    this.finish();
+  }
 
   @Override
     public boolean onOptionsItemSelected (MenuItem item) {

@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -33,15 +34,22 @@ public class EventPage extends AppCompatActivity implements MaterialTabListener 
   MaterialTabHost tabHost;
   ViewPager pager;
   Toolbar toolbar;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate (savedInstanceState);
     setContentView (R.layout.activity_event_page);
+
     if (getIntent().getBooleanExtra("EXIT", false)) {
       this.moveTaskToBack(true);
     }
+
+    //Initialise viewpager
     pager = (ViewPager)findViewById (R.id.pager);
+
+    //Initialise tabhost
     tabHost = (MaterialTabHost) this.findViewById (R.id.materialTabHost);
+
   //  Toast.makeText (getApplicationContext (), Vars.user.response.google_token.toString (),Toast.LENGTH_LONG).show ();
     toolbar = (Toolbar)findViewById (R.id.toolbar);
     setSupportActionBar (toolbar);
@@ -50,6 +58,9 @@ public class EventPage extends AppCompatActivity implements MaterialTabListener 
     mTitle.setAllCaps (false);
     Typeface tf = Typeface.createFromAsset (getAssets (),"MuseoSans_900.otf");
     mTitle.setTypeface (tf);
+
+    //Use picasso library to load images. Picasso libary has been added to the prject available in
+    //build.gradle file
     com.pkmmte.view.CircularImageView avatar = (com.pkmmte.view.CircularImageView)findViewById (R.id.myAvartar);
     try {
       Picasso.with (this).load (Vars.user.response.picture)
@@ -58,6 +69,7 @@ public class EventPage extends AppCompatActivity implements MaterialTabListener 
     }catch (Exception e){
       e.printStackTrace ();
     }
+
     MyPagerAdapter pagerAdapter = new MyPagerAdapter (getSupportFragmentManager ());
     pager.setAdapter (pagerAdapter);
     pager.setOnPageChangeListener (new ViewPager.SimpleOnPageChangeListener () {
@@ -72,9 +84,7 @@ public class EventPage extends AppCompatActivity implements MaterialTabListener 
               .getPageTitle (i))
               .setTabListener (this));
     }
-
-    }
-
+  }
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
@@ -92,6 +102,7 @@ public class EventPage extends AppCompatActivity implements MaterialTabListener 
 
     //noinspection SimplifiableIfStatement
     if (id == R.id.logout) {
+      revokeAccess ();
       Vars.clearDB (getApplicationContext ());
       Intent intent = new Intent (EventPage.this, LoginActivity.class);
       startActivity (intent);
@@ -102,10 +113,10 @@ public class EventPage extends AppCompatActivity implements MaterialTabListener 
       revokeAccess ();
       Intent i = new Intent (EventPage.this, MainActivity.class);
       startActivity (i);
-
     }
     return true;
   }
+
   public void revokeAccess(){
     if (MyApp.mGoogleApiClient.isConnected()) {
       Plus.AccountApi.clearDefaultAccount(MyApp.mGoogleApiClient);
@@ -156,7 +167,6 @@ public class EventPage extends AppCompatActivity implements MaterialTabListener 
     public CharSequence getPageTitle (int position) {
       return getResources ().getStringArray (R.array.tabs)[position];
     }
-
   }
 
   @Override

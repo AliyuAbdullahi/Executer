@@ -32,6 +32,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <TextView
+      android:textStyle="bold"
       android:layout_marginBottom="10dp"
       android:layout_marginTop="10dp"
       android:text="This is the damn title for the event"
@@ -56,26 +57,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
     </LinearLayout>
-    <LinearLayout
-      android:id="@+id/container_ends"
-      android:layout_below="@id/container_start"
-      android:orientation="horizontal"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content">
-      <TextView
-        android:id="@+id/endTimeOfEvent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Ends: "/>
-      <TextView
-        android:id="@+id/endTimeValueOfEvent"
-        android:text="8888/0000/3333"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-    </LinearLayout>
+
     <ImageView
-      android:layout_width="70dp"
-      android:layout_height="80dp"
+      android:layout_width="100dp"
+      android:layout_height="100dp"
       android:src="@drawable/logoone"
       android:layout_centerVertical="true"
       android:layout_alignParentRight="true"
@@ -114,7 +99,7 @@
     android:gravity="center_horizontal"
     android:background="@drawable/cancel_booking"
     android:layout_marginTop="30dp"
-    android:id="@+id/bookeRideNow"
+    android:id="@+id/cancelBookingNow"
     android:layout_width="300dp"
     android:layout_height="70dp"/>
 

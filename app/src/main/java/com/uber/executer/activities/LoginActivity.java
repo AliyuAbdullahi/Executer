@@ -32,6 +32,10 @@ public class LoginActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    if (getIntent().getBooleanExtra("EXIT", false)) {
+      this.moveTaskToBack(true);
+    }
+
 
     String user = Vars.getDB (this, "user", "user");
 
@@ -50,13 +54,12 @@ public class LoginActivity extends AppCompatActivity {
 
   public static Activity Instance;
 
-
-
   private WebView webView;
   private Dialog authenticationDialog;
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   public void authDialog(View view) {
+    Toast.makeText (getApplicationContext (), "Loading Uber signin", Toast.LENGTH_LONG).show ();
     try {
       if (authenticationDialog == null) {
         authenticationDialog = new Dialog(this);
@@ -77,7 +80,6 @@ public class LoginActivity extends AppCompatActivity {
         } catch (Exception e0) {
           e0.printStackTrace();
         }
-
       }
     } catch (Exception e0) {
       e0.printStackTrace();
@@ -87,10 +89,11 @@ public class LoginActivity extends AppCompatActivity {
   private void uberHackAuth(String url) {
     Uri uri = Uri.parse(url);
     String code = uri.getQueryParameter("code");
-    Vars.Toaster ("Auth code:" + code, this, 0);
   }
 
   private void uberAuth() {
+
+    //Loads a webview and return user token and other relevant info for the app
 
     final Activity self = this;
     webView = (WebView) authenticationDialog.findViewById(R.id.authWebView);
@@ -110,7 +113,6 @@ public class LoginActivity extends AppCompatActivity {
       @Override
       public void onPageFinished(WebView view, String url) {
         super.onPageFinished(view, url);
-        Vars.Toaster (url, self, 0);
         if (url.contains("code=")) {
           webView.loadUrl ("javascript:uber.getJSONString(document.body.innerText);");
           authenticationDialog.hide ();
@@ -119,11 +121,12 @@ public class LoginActivity extends AppCompatActivity {
 
         }
       }
-
     });
     webView = Vars.popUpWebView(webView, this);
-    webView.loadUrl ("https://login.uber.com/oauth/authorize?response_type=code&redirect_uri=https%3A%2F%2Fandelahack.herokuapp.com%2Fuber%2Fcallback&scope=profile&client_id=rr2NzvHi69QJalUHz0ImU1KidoE1KGc5");
-
+    webView.loadUrl ("https://login.uber.com/oauth/authorize?response_type" +
+            "=code&redirect_uri=https%3A%2F%2Fandelahack" +
+            ".herokuapp" +
+            ".com%2Fuber%2Fcallback&scope=profile&client_id=rr2NzvHi69QJalUHz0ImU1KidoE1KGc5");
   }
 
   @Override
@@ -139,5 +142,12 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     return super.onOptionsItemSelected(item);
+  }
+  @Override
+  public void onBackPressed () {
+    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    intent.putExtra ("EXIT", true);
+    startActivity (intent);
   }
 }

@@ -56,82 +56,30 @@ public class Vars {
         GET, POST, PUT, DELETE
     }
 
-    public static final int GET = 1;
     public static final int POST = 2;
-    // public static final int PUT = 3;
-    public static final int DELETE = 4;
-    public static final String KEY_STATUS_CODE = "status_code";
-    public static final String CHARSET = "UTF-8";
-    public static final String KEY_ERROR = "error";
-    public static final String KEY_TRANS_ID = "transaction_id";
-    public static final String KEY_REFERS = "refers";
-    public static final String KEY_AIRTIME = "airtime";
-    public static final String KEY_USER = "user";
-    public static final String KEY_REFERRER = "referrer";
-    public static final String KEY_MESSAGE = "message";
     public static final String KEY_HEADER_TOKEN = "X-Yj-Token";
     public static final String KEY_HEADER_USER = "X-Yj-User";
     public static final String KEY_ID = "id";
     public static User user;
-    //  public static final String KEY_JSON = "json";
-    public static final String KEY_QUERY = "query";
-    public static final String KEY_ENABLED = "enabled";
-    public static final String KEY_UID = "user_id";
     public static final String KEY_EMAIL = "email";
-    public static final String KEY_PASSWORD = "password";
-    public static final String KEY_PLT = "platform";
-    public static final String KEY_NAME = "name";
-    public static final String KEY_ADDRESS = "address";
-    public static final String KEY_TOKEN = "token";
-    public static final String KEY_SECRET = "secret";
-    public static final String KEY_USN = "username";
-    public static final String KEY_EXPIRY = "expiry";
+
     public static final String KEY_IMG = "picture";
-    public static final String KEY_IMAGES = "images";
-    public static final String KEY_IMAGE = "image";
-    public static final String KEY_IMAGE_SM = "image_sm";
-    public static final String KEY_LOGO = "logo";
-    public static final String KEY_LOCATION = "location";
-    public static final String KEY_LNG = "longitude";
-    public static final String KEY_EMAIL_NOTIFY = "email_notify";
-    public static final String KEY_NOTIFICATIONS = "notifications";
+
     public static java.util.Calendar[] calendars;
-    public static final String KEY_LAT = "latitude";
-    //  public static final String KEY_LOCATION_MAP = "location_map";
 
-    public static final String KEY_CARD_ID = "card_id";
-    public static final String KEY_BANK_ID = "bank_id";
-
-    public static final String KEY_PHONE = "phone";
-    public static final String KEY_ACC_NO = "acc_no";
-    public static final String KEY_ACC_NAME = "acc_name";
-    public static final String KEY_ACC_TYPE = "acc_type";
-    public static final String KEY_CAT = "category";
-    public static boolean isLoginLoading = false;
     public static String API_TOKEN = "";
     public static String locale = "en-US";
-    public static String[] platforms = new String[]{"", "Twitter", "LinkedIn", "Google", "Facebook"};
     public static User currentUser = null;
 
-
-    public static int socialNetworkID = 0;
-    public static String BROADCAST_ACTION = "com.trivoda.jara.VIEW_ACTION";
     public static String BASE_URL = "https://andelahack.herokuapp.com/";
-    //public static String BASE_URL = "http://192.168.57.1/projects/your-jara/app/";
     public static String API_PATH = "";
     private static String myPrefs = "trvYJ001";
-    public static String VersionName = "";
-    public static String VersionCode = "";
-
     private static Dialog loading = null;
-
-
 
     public static String getAPI_TOKEN(Context context) {
         locale = context.getResources().getConfiguration().locale.toString();
         return API_TOKEN.isEmpty() ? Vars.getDB(context, Vars.KEY_HEADER_TOKEN, "") : API_TOKEN;
     }
-
 
     public static long airtime(int modified_at, int card_duration) {
 
@@ -145,22 +93,6 @@ public class Vars {
 
 
     }
-
-
-//  public static JSONObject getJSONObjectString(String jsonString) {
-//    try {
-//      return new JSONObject(jsonString);
-//    } catch (JSONException jse) {
-//      jse.printStackTrace();
-//      return null;
-//    }
-//  }
-
-//  public static float round(float d, int decimalPlace) {
-//    BigDecimal bd = new BigDecimal(Float.toString(d));
-//    bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
-//    return bd.floatValue();
-//  }
 
     public static String toCurrency(float value) {
         DecimalFormat formatter = new DecimalFormat("#,###.00");
@@ -190,28 +122,6 @@ public class Vars {
         return  date;
     }
 
-
-
-
-//    public static AutoSpanRecyclerView recyclerView = null;
-//
-//    public static void PopulateOfferList(final Activity activity, final View view, final com.trivoda.jara.model.Offer[] offers, final int recyclerViewId) {
-//        activity.runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                if (offers == null || offers.length == 0) {
-//                    Vars.showCenterMessage(activity, view, R.id.mainView, activity.getString(R.string.no_content) + " " + activity.getString(R.string.title_offers).toLowerCase(), null);
-//                } else {
-//                    recyclerView = (AutoSpanRecyclerView) view.findViewById(recyclerViewId);
-//                    recyclerView.setHasFixedSize(true);
-//                    recyclerView.setLayoutManager(new GridLayoutManager(activity, 2));
-//                    recyclerView.setAdapter(new OfferAdapter(offers, activity));
-//                }
-//            }
-//        });
-//    }
-
-
     public static void ShowNativeMessage(final Activity activity, final String msg, final String title, final DialogInterface.OnClickListener positiveClick) {
         activity.runOnUiThread(new Runnable() {
 
@@ -231,8 +141,6 @@ public class Vars {
         });
 
     }
-
-
 
     public static void isLoading(final Activity context, final boolean b) {
         context.runOnUiThread(new Runnable() {
@@ -266,8 +174,6 @@ public class Vars {
             }
         });
     }
-
-
 
     public static boolean isOldUser(Activity activity, boolean isOld) {
 
@@ -369,38 +275,10 @@ public class Vars {
     }
 
     public static void clearDB(Context context) {
-        try {
-            Vars.currentUser = null;
 
-        } catch (SQLiteException sqlError) {
-            sqlError.printStackTrace();
-        }
-        context.getSharedPreferences(myPrefs, Activity.MODE_PRIVATE).edit().clear().apply();
+        context.getSharedPreferences(myPrefs,0).edit().clear().apply();
     }
 
-//    public static abstract class GetBitmapFromURL {
-//
-//        public GetBitmapFromURL(String bitmapURL, final Context context) {
-//            final java.lang.annotation.Target target = new java.lang.annotation.Target () {
-//
-//                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-//                    done(bitmap);
-//                }
-//
-//
-//                public void onPrepareLoad(Drawable placeHolderDrawable) {
-//
-//                }
-//
-//                public void onBitmapFailed(Drawable errorDrawable) {
-//                    //done(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_plusone_small_off_client));
-//                }
-//            };
-//            Picasso.with(context).load(bitmapURL).centerInside().into(target);
-//        }
-//
-//        protected abstract void done(Bitmap bitmap);
-//    }
 
     public static void Toaster(final String msg, final Activity activity, int duration) {
         final int toastDuration = duration == 0 ? Toast.LENGTH_LONG : duration;

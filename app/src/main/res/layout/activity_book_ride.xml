@@ -76,11 +76,12 @@
     </LinearLayout>
     <ImageView
       android:src="@drawable/logoone"
-      android:layout_width="70dp"
-      android:layout_height="80dp"
+      android:layout_width="100dp"
+      android:layout_height="100dp"
       android:layout_marginRight="16dp"
       android:layout_alignBottom="@+id/container_ends"
       android:layout_alignParentRight="true"
+      android:layout_marginTop="16dp"
       android:layout_alignParentEnd="true"/>
   </RelativeLayout>
   <View
@@ -92,13 +93,14 @@
   <LinearLayout
     android:layout_marginTop="5dp"
     android:background="@color/nativeGreen"
-    android:layout_marginRight="32dp"
-    android:layout_marginLeft="32dp"
+    android:layout_marginRight="27dp"
+    android:layout_marginLeft="27dp"
     android:layout_gravity="center_horizontal"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <TextView
+      android:textColor="#fff"
       android:padding="5dp"
       android:layout_marginLeft="5dp"
       android:layout_marginTop="5dp"
@@ -117,11 +119,12 @@
       android:layout_marginRight="10dp"
       android:layout_marginLeft="10dp"
       android:background="#fff"
-      android:hint="Location here..."
+      android:hint="Location..."
       android:textColorHint="#999"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"/>
     <TextView
+      android:textColor="#fff"
       android:layout_marginLeft="5dp"
       android:padding="5dp"
       android:text="Destination"
@@ -140,11 +143,12 @@
       android:layout_marginRight="10dp"
       android:layout_marginLeft="10dp"
       android:background="#fff"
-      android:hint="Destination goes here..."
+      android:hint="Destination..."
       android:textColorHint="#999"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"/>
     <TextView
+      android:textColor="#fff"
       android:layout_marginLeft="5dp"
       android:padding="5dp"
       android:text="Uber Product"
@@ -154,7 +158,7 @@
       style="@android:style/Widget.Holo.Spinner"
       android:id="@+id/spinner_for_uber_type"
       android:padding="10dp"
-      android:layout_marginBottom="5dp"
+      android:layout_marginBottom="10dp"
       android:layout_marginRight="10dp"
       android:layout_marginLeft="10dp"
       android:layout_width="match_parent"

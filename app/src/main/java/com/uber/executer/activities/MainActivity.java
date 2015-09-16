@@ -70,8 +70,6 @@ public class MainActivity extends Activity implements
   private GoogleApiClient mGoogleApiClient;
   public  static Calendar[] calendars;
   private boolean mGoogleIntentInProgress;
-
-
   public static final String PREFS_NAME = "MyPrefsFile";
   public ImageView myAnimation;
   private static final String SHARED_PREFERENCE_NAME = "mySharedPreference" ;
@@ -106,7 +104,9 @@ public class MainActivity extends Activity implements
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate (savedInstanceState);
 
-    activityIsIdentified = Boolean.valueOf (readFromPreference (getApplicationContext (),ACTIVITY_CAUGHT_RED_HANDED,"false"));
+    activityIsIdentified = Boolean.valueOf (readFromPreference (getApplicationContext ()
+            ,ACTIVITY_CAUGHT_RED_HANDED,"false"));
+
     if (getIntent().getBooleanExtra("EXIT", false)) {
       this.moveTaskToBack(true);
     }
@@ -125,6 +125,8 @@ public class MainActivity extends Activity implements
     {
       e.printStackTrace ();
     }
+
+    //Use picasso library to load user image into imageview
     avatar = (com.pkmmte.view.CircularImageView)findViewById (R.id.avatar);
 try {
   Picasso.with (this).load (Vars.user.response.picture)
@@ -137,6 +139,7 @@ try {
   }
 
   private void init() {
+    //Initialise the google api and setup connection
 
     mAuthProgressDialog = new ProgressDialog(this);
     mAuthProgressDialog.setMessage ("Loading...");
@@ -244,7 +247,6 @@ try {
               params.put ("refreshToken", "");
               params.put ("accessToken", token);
               return params;
-
             }
 
             @Override
@@ -265,7 +267,7 @@ try {
           e.printStackTrace ();
         }
         } else if (errorMessage != null) {
-
+          Toast.makeText (getApplicationContext (),errorMessage,Toast.LENGTH_SHORT).show ();
         }
       }
     };
@@ -281,7 +283,6 @@ try {
        e.printStackTrace ();
      }
   }
-
 
   @Override
   public void onConnectionFailed(ConnectionResult result) {
@@ -357,7 +358,7 @@ try {
             }, 2000);
 
           } else {
-            Toast.makeText (getApplicationContext (),"Connecting...", Toast.LENGTH_SHORT).show ();
+
             Log.d(TAG, "Trying to connect to Google API");
             mGoogleApiClient.connect();
           }

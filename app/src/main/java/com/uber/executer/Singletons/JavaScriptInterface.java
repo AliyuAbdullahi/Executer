@@ -57,7 +57,6 @@ public class JavaScriptInterface {
                 else{
                     Toast.makeText (AppContext.getAppContext (),"You do not have any Calendar Event",Toast.LENGTH_LONG).show ();
                 }
-
             }
 
             @Override

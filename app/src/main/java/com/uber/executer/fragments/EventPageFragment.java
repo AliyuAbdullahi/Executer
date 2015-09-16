@@ -40,6 +40,7 @@ import java.util.Locale;
  * Created by aliyuolalekan on 8/10/15.
  */
 public class EventPageFragment extends Fragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener{
+
   private static final String TAG = "Connect";
   String summary;
   private IntentFilter filter;
@@ -59,15 +60,6 @@ public class EventPageFragment extends Fragment implements GoogleApiClient.Conne
     super.onCreateView (inflater, container, savedInstanceState);
     View view = inflater.inflate (R.layout.events, container, false);
 
-    final LocationManager manager = (LocationManager)getActivity ().getSystemService (Context.LOCATION_SERVICE);
-
-//    if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ){
-//      Toast.makeText(getActivity (), "GPS is disabled!", Toast.LENGTH_LONG).show();
-//      startActivity (new Intent (android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-//      Toast.makeText (getActivity (),"Turn on GPS",Toast.LENGTH_SHORT).show ();
-//    }
-//    else
-//      Toast.makeText(getActivity (), "GPS is enabled!", Toast.LENGTH_LONG).show();
     eventList = (ListView)view. findViewById(R.id.events);
     try{
       eventList.setAdapter (new EventAdapter (getActivity (), calendars));
@@ -82,8 +74,8 @@ public class EventPageFragment extends Fragment implements GoogleApiClient.Conne
 
         Calendar calendar = (Calendar) parent.getItemAtPosition (position);
         try {
-          coolTime = Vars.dateToRelativeString ((calendar.start).toString ());
-        } catch (ParseException e) {
+          coolTime = calendar.start;
+        } catch (Exception e) {
           e.printStackTrace ();
         }
         try{
@@ -129,7 +121,6 @@ public class EventPageFragment extends Fragment implements GoogleApiClient.Conne
     locationRequest.setPriority (LocationRequest.PRIORITY_HIGH_ACCURACY);
     locationRequest.setInterval (1000);
     LocationServices.FusedLocationApi.requestLocationUpdates (googleApiClient, locationRequest, this);
-
   }
 
   @Override
@@ -158,7 +149,6 @@ public class EventPageFragment extends Fragment implements GoogleApiClient.Conne
   public void onConnectionFailed (ConnectionResult connectionResult) {
     Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + connectionResult.getErrorCode());
   }
-
 
   public class EventAdapter extends BaseAdapter {
     private Context context;

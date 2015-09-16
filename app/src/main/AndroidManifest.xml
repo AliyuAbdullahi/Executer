@@ -61,7 +61,8 @@
 
         <activity
             android:name=".activities.EventBookedDetails"
-            android:label="@string/title_activity_event_booked_details" >
+            android:label="@string/title_activity_event_booked_details"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 

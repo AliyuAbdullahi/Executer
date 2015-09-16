@@ -1,5 +1,8 @@
 package com.uber.executer.activities;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.v4.app.Fragment;
@@ -12,9 +15,17 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.plus.Plus;
 import com.squareup.picasso.Picasso;
 import com.uber.executer.R;
@@ -24,14 +35,20 @@ import com.uber.executer.fragments.BookedEventDetails.DriverDetailsFragment;
 import com.uber.executer.fragments.BookedEventFragment;
 import com.uber.executer.fragments.EventPageFragment;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import it.neokree.materialtabs.MaterialTab;
 import it.neokree.materialtabs.MaterialTabHost;
 import it.neokree.materialtabs.MaterialTabListener;
 
 public class EventBookedDetails extends AppCompatActivity implements MaterialTabListener {
+  Button cancelBookingNow;
   MaterialTabHost tabHost;
   ViewPager pager;
   Toolbar toolbar;
+  public String eventSummary;
   public String id;
   public String starts;
   public String type;
@@ -41,6 +58,7 @@ public class EventBookedDetails extends AppCompatActivity implements MaterialTab
   TextView titleOfevent;
   TextView startTimeValue;
   TextView ends;
+
   @Override
   protected void onCreate (Bundle savedInstanceState) {
     super.onCreate (savedInstanceState);
@@ -63,6 +81,8 @@ public class EventBookedDetails extends AppCompatActivity implements MaterialTab
     }catch (Exception e){
       e.printStackTrace ();
     }
+
+    cancelBookingNow = (Button)findViewById (R.id.cancelBookingNow);
     Intent got = getIntent ();
     id = got.getStringExtra ("id");
     Log.e ("id",id);
@@ -70,24 +90,32 @@ public class EventBookedDetails extends AppCompatActivity implements MaterialTab
     starts = got.getStringExtra ("start");
     reminder = got.getStringExtra ("reminder");
     summary = got.getStringExtra ("destination");
+    eventSummary = got.getStringExtra ("summary");
     startTimeValue = (TextView)findViewById (R.id.startTimeValueofEvent);
-    startTimeValue.setText (starts);
-    titleOfevent.setText (summary);
+
+    String timeFormatter = starts.split("\\+")[0];
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    try {
+      Date date = sdf.parse (timeFormatter);
+      SimpleDateFormat dt = new SimpleDateFormat("EEE, MMM d, yyyy");
+      startTimeValue.setText (dt.format (date));
+    } catch (ParseException e) {
+      e.printStackTrace ();
+    }
+
+    titleOfevent.setText (eventSummary);
    //locationTo = got.getStringExtra ("destination");
-
-
     Bundle bundle = new Bundle();
     bundle.putString("starts", starts);
     bundle.putString ("type", type);
     bundle.putString ("destination", summary);
     bundle.putString ("reminder", reminder);
-// set Fragmentclass Arguments
+    bundle.putString ("summary", eventSummary);
+
+// setup BookedEventFragmentclass Arguments
     com.uber.executer.fragments.BookedEventDetails.BookedEventFragment fragobj
             = new com.uber.executer.fragments.BookedEventDetails.BookedEventFragment ();
     fragobj.setArguments (bundle);
-
-
-
 
     MyPagerAdapter pagerAdapter = new MyPagerAdapter (getSupportFragmentManager ());
     pager.setAdapter (pagerAdapter);
@@ -104,6 +132,36 @@ public class EventBookedDetails extends AppCompatActivity implements MaterialTab
               .setTabListener (this));
     }
 
+    //cancel booking
+    cancelBookingNow.setOnClickListener (new View.OnClickListener () {
+
+      @Override
+      public void onClick (View v) {
+           try {
+              RequestQueue queue = Volley.newRequestQueue (getApplicationContext ());
+              StringRequest request = new StringRequest (Request.Method.DELETE,
+                      "http://andelahack.herokuapp.com/users/"
+                      + Vars.user.response.uuid
+                      + "/requests/" + id, new Response.Listener<String> () {
+                @Override
+                public void onResponse (String response) {
+                  Toast.makeText (getApplicationContext (), "Event Canceled", Toast.LENGTH_SHORT).show ();
+                  Intent intent = new Intent (EventBookedDetails.this, EventPage.class);
+                  startActivity (intent);
+                  finish ();
+                }
+              }, new Response.ErrorListener () {
+                @Override
+                public void onErrorResponse (VolleyError error) {
+
+                }
+              });
+              queue.add (request);
+            } catch (Exception e) {
+              e.printStackTrace ();
+            }
+          }
+        });
   }
 
   @Override
@@ -123,6 +181,7 @@ public class EventBookedDetails extends AppCompatActivity implements MaterialTab
     //noinspection SimplifiableIfStatement
     if (id == R.id.logout) {
       Vars.clearDB (getApplicationContext ());
+      revokeAccess ();
       Intent intent = new Intent (EventBookedDetails.this, LoginActivity.class);
       startActivity (intent);
       Toast.makeText (getApplicationContext (), "You have logged out", Toast.LENGTH_SHORT).show ();
@@ -132,10 +191,11 @@ public class EventBookedDetails extends AppCompatActivity implements MaterialTab
       revokeAccess ();
       Intent i = new Intent (EventBookedDetails.this, MainActivity.class);
       startActivity (i);
-
     }
     return true;
   }
+
+  //signout of google
   public void revokeAccess(){
     if (MyApp.mGoogleApiClient.isConnected()) {
       Plus.AccountApi.clearDefaultAccount(MyApp.mGoogleApiClient);
@@ -158,6 +218,8 @@ public class EventBookedDetails extends AppCompatActivity implements MaterialTab
   public void onTabUnselected (MaterialTab materialTab) {
 
   }
+
+  //A class that sets up the viewpager
   public class MyPagerAdapter extends FragmentPagerAdapter {
 
     public MyPagerAdapter (FragmentManager fm) {
@@ -188,7 +250,6 @@ public class EventBookedDetails extends AppCompatActivity implements MaterialTab
     }
   }
 
-
   public String getStarts () {
     Intent here = getIntent ();
     starts = here.getStringExtra ("starts");
@@ -212,5 +273,4 @@ public class EventBookedDetails extends AppCompatActivity implements MaterialTab
     reminder = here.getStringExtra ("reminder");
     return reminder;
   }
-
 }

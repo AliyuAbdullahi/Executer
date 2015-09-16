@@ -12,11 +12,15 @@ import android.widget.TextView;
 import com.uber.executer.R;
 import com.uber.executer.activities.EventBookedDetails;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by aliyuolalekan on 9/12/15.
  */
 public class BookedEventFragment extends Fragment {
-
+  //Fragment to show the details of the booked event
   @Nullable
   @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -29,7 +33,16 @@ public class BookedEventFragment extends Fragment {
 
     to.setText (bookedDetails.getLocationTo ());
     product.setText (bookedDetails.getType ());
-    reminder.setText (bookedDetails.getReminder ());
+
+    String timeFormatter2 = bookedDetails.getReminder ().split("\\+")[0];
+    SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    try {
+      Date date2 = sdf2.parse (timeFormatter2);
+      SimpleDateFormat dt2 = new SimpleDateFormat("yyyy-mm-dd hh:mm");
+      reminder.setText (dt2.format (date2));
+    } catch (ParseException e) {
+      e.printStackTrace ();
+    }
     return view;
   }
 }

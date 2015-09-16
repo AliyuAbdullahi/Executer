@@ -9,10 +9,24 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.uber.executer.R;
+import com.uber.executer.Singletons.Vars;
 import com.uber.executer.activities.EventBookedDetails;
 import com.uber.executer.activities.EventPage;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by aliyuolalekan on 8/19/15.
@@ -34,13 +48,71 @@ public class NotificationService extends Service {
   @Override
   public void onStart (Intent intent, int startId) {
     super.onStart (intent, startId);
-    String id = intent.getStringExtra ("id");
-    String reminderTime = intent.getStringExtra ("start");
-    String address = intent.getStringExtra ("destination");
-    String productString = intent.getStringExtra ("type");
-    String reminder = intent.getStringExtra ("reminder");
-    int icon = R.mipmap.ic_launcher;
-    long when = System.currentTimeMillis();
+    String address = null;
+    String id = null;
+    int icon = 0;
+    long when = 0;
+    String reminderTime = null;
+    String productString = null;
+    String summary = null;
+    String reminder = null;
+    try{
+      id = intent.getStringExtra ("id");
+      reminderTime = intent.getStringExtra ("start");
+      address= intent.getStringExtra ("destination");
+      productString = intent.getStringExtra ("type");
+      reminder = intent.getStringExtra ("reminder");
+      summary = intent.getStringExtra ("summary");
+
+      icon = R.mipmap.ic_launcher;
+      when = System.currentTimeMillis();
+
+    }catch (Exception e){
+      e.printStackTrace ();
+    }
+    try{
+      RequestQueue queue = Volley.newRequestQueue (getApplicationContext ());
+      final String requestId = id;
+      final String finalProductString = productString;
+      StringRequest request = new StringRequest (Request.Method.POST, "http://andelahack.herokuapp.com/trips/"+ Vars.user.response.uuid, new Response.Listener<String> () {
+        @Override
+        public void onResponse (String response) {
+          Toast.makeText (getApplicationContext (), finalProductString + " is on its way for your event", Toast.LENGTH_SHORT).show ();
+          Toast.makeText (getApplicationContext (),response,Toast.LENGTH_SHORT).show ();
+        }
+      }, new Response.ErrorListener () {
+        @Override
+        public void onErrorResponse (VolleyError error) {
+          Toast.makeText (getApplicationContext (), error+"", Toast.LENGTH_SHORT).show ();
+        }
+      })
+      {
+        @Override
+        protected Map<String, String> getParams () throws AuthFailureError {
+          super.getParams ();
+          Map<String,String> params = new HashMap<String, String> ();
+          params.put ("request_id", requestId);
+          return params;
+        }
+
+        @Override
+        public Map<String, String> getHeaders () throws AuthFailureError {
+          super.getHeaders ();
+          Map<String,String> params = new HashMap<String, String>();
+          params.put("Content-Type","application/x-www-form-urlencoded");
+          return params;
+        }
+      };
+      int socketTimeout = 30000;//30 seconds - change to what you want
+      RetryPolicy policy = new DefaultRetryPolicy (socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+      request.setRetryPolicy(policy);
+
+      queue.add (request);
+
+    }catch (Exception e){
+      e.printStackTrace ();
+    }
+
     Notification notification = new Notification(icon, address, when);
 
     NotificationManager mNotificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
@@ -57,6 +129,7 @@ public class NotificationService extends Service {
     notificationIntent.putExtra ("reminder", reminder);
     notificationIntent.putExtra ("type", productString);
     notificationIntent.putExtra ("id",id);
+    notificationIntent.putExtra ("summary", summary);
     PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
     notification.contentIntent = contentIntent;
 
@@ -68,6 +141,5 @@ public class NotificationService extends Service {
 
     mNotificationManager.notify(1, notification);
   }
-
 
 }

@@ -16,12 +16,14 @@ public class AlarmReciever extends BroadcastReceiver {
     String address = intent.getStringExtra ("destination");
     String productString = intent.getStringExtra ("type");
     String reminder = intent.getStringExtra ("reminder");
+    String summary = intent.getStringExtra ("summary");
     Intent myIntent = new Intent(context, NotificationService.class);
     myIntent.putExtra ("start", reminderTime);
     myIntent.putExtra ("destination", address);
     myIntent.putExtra ("type", productString);
     myIntent.putExtra ("reminder", reminder);
     myIntent.putExtra ("id", productId);
+    myIntent.putExtra ("summary", summary);
 
     context.startService(myIntent);
   }

@@ -44,7 +44,7 @@
     android:textColor="#000"
     android:layout_gravity="center_horizontal"
     android:gravity="center_horizontal"
-    android:text="Sync your Calendar and shedule \nUber rides for your events"
+    android:text="Sync your Calendar and schedule \nUber rides for your events"
     android:layout_height="wrap_content"
     android:layout_above="@+id/google_plus_button"
     android:layout_alignParentLeft="true"

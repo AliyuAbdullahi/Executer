@@ -13,6 +13,7 @@ import com.uber.executer.R;
  * Created by aliyuolalekan on 9/12/15.
  */
 public class DriverDetailsFragment extends Fragment {
+  //Fragment to show the details of the driver
   @Nullable
   @Override
   public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

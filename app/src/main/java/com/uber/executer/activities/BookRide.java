@@ -95,7 +95,6 @@ public class BookRide extends AppCompatActivity {
 
     manager = (NotificationManager)getSystemService (Context.NOTIFICATION_SERVICE);
 
-
     //set up toolbar
     toolbar = (Toolbar)findViewById (R.id.toolbar);
     setSupportActionBar (toolbar);
@@ -119,6 +118,7 @@ public class BookRide extends AppCompatActivity {
     }catch (Exception e){
       e.printStackTrace ();
     }
+
     //get data from EventPageFragment and populate the view
     Intent gotten = getIntent ();
     final String end = gotten.getStringExtra ("end");
@@ -130,8 +130,28 @@ public class BookRide extends AppCompatActivity {
 
     eventTitle.setText (summary);
     eventDestination.setText (location);
-    startTimeValueOfEvent.setText (timing);
-    endTimeValueOfEvent.setText (end);
+
+    String timeFormatter = timing.split("\\+")[0];
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    try {
+      Date date = sdf.parse (timeFormatter);
+      SimpleDateFormat dt = new SimpleDateFormat("EEE, MMM d, yyyy");
+      startTimeValueOfEvent.setText (dt.format (date));
+    } catch (ParseException e) {
+      e.printStackTrace ();
+    }
+
+
+    String timeFormatter2 = end.split("\\+")[0];
+    SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    try {
+      Date date2 = sdf.parse (timeFormatter2);
+      SimpleDateFormat dt2 = new SimpleDateFormat("EEE, MMM d, yyyy");
+      endTimeValueOfEvent.setText (dt2.format (date2));
+    } catch (ParseException e) {
+      e.printStackTrace ();
+    }
+
     spinnerForUberType = (Spinner)findViewById (R.id.spinner_for_uber_type);
 
     List<String> list;
@@ -140,6 +160,7 @@ public class BookRide extends AppCompatActivity {
     for(String item: getResources ().getStringArray (R.array.taxies)){
       list.add(item);
     }
+
 //    ArrayAdapter<CharSequence> adapters = ArrayAdapter.createFromResource (this, R.array.taxies, R.layout.simple_spinner_dropdown_item);
 //    adapters.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
 //    spinnerForUberType.setAdapter (adapters);
@@ -147,7 +168,6 @@ public class BookRide extends AppCompatActivity {
             android.R.layout.simple_spinner_item, list);
     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     spinnerForUberType.setAdapter (adapter);
-
 
     bookARide = (Button)findViewById (R.id.bookeRideNow);
     bookARide.setOnClickListener (new View.OnClickListener () {
@@ -163,6 +183,7 @@ public class BookRide extends AppCompatActivity {
            }
 
          }
+
          else {
            RequestQueue queue = Volley.newRequestQueue (getApplicationContext ());
            StringRequest stringRequest = new StringRequest (Request.Method.POST,
@@ -175,6 +196,8 @@ public class BookRide extends AppCompatActivity {
                        String productString = null;
                        String id = null;
                        String productId = null;
+                       String returnedSummary = null;
+
                        try {
                          JSONObject object = new JSONObject (response);
                          JSONObject objectResponse = object.getJSONObject ("response");
@@ -185,6 +208,7 @@ public class BookRide extends AppCompatActivity {
                          productId = objectResponse.getString ("id");
                          JSONObject destinationObj = objectResponse.getJSONObject ("destination");
                          address = destinationObj.getString ("address");
+                         returnedSummary = objectResponse.getString ("summary");
                          Log.e("Id: ",productId+"");
                          reminderTime = estimate.getString ("reminder");
                          Log.e ("reminder", reminderTime);
@@ -200,12 +224,14 @@ public class BookRide extends AppCompatActivity {
                        } catch (ParseException e) {
                          e.printStackTrace ();
                        }
+
                        Intent myIntent = new Intent(BookRide.this, AlarmReciever.class);
                        myIntent.putExtra ("type",productString);
                        myIntent.putExtra ("start",dataTime);
                        myIntent.putExtra ("reminder", reminderTime);
                        myIntent.putExtra ("destination",address);
                        myIntent.putExtra ("id", productId);
+                       myIntent.putExtra ("summary", returnedSummary);
 
                        PendingIntent pendingIntent = PendingIntent.getBroadcast(BookRide.this,
                                0, myIntent, 0);
@@ -221,11 +247,11 @@ public class BookRide extends AppCompatActivity {
              * using this method.
              */
 
-                       alarmManager.set (AlarmManager.RTC, System.currentTimeMillis (),
-                               pendingIntent);
+//                       alarmManager.set (AlarmManager.RTC, System.currentTimeMillis (),
+//                               pendingIntent);
 
-//              alarmManager.set (AlarmManager.RTC, time,
-//                      pendingIntent);
+              alarmManager.set (AlarmManager.RTC, time,
+                      pendingIntent);
 
                      }
                    }, new Response.ErrorListener () {
@@ -242,6 +268,7 @@ public class BookRide extends AppCompatActivity {
                params.put("startTime",dataTime);
                params.put("productType",spinnerForUberType.getSelectedItem ().toString ());
                params.put ("location",pickUpLocation.getText ().toString ());
+               params.put("summary", summary);
                return params;
              }
 
@@ -260,16 +287,14 @@ public class BookRide extends AppCompatActivity {
            queue.add (stringRequest);
 
          }
-
-
         }
         else {
           Toast.makeText (BookRide.this, "Enable network connection", Toast.LENGTH_SHORT).show ();
         }
       }
     });
-    //setup taxies
 
+    //setup taxies
   }
   public void initField(){
     eventTitle = (TextView)findViewById (R.id.titleOfEvent);
@@ -304,6 +329,12 @@ public class BookRide extends AppCompatActivity {
   }
 
   @Override
+  protected void onStart () {
+    super.onStart ();
+
+  }
+
+  @Override
   public void onBackPressed () {
     Intent i = new Intent (BookRide.this, EventPage.class);
     startActivity (i);
@@ -319,6 +350,7 @@ public class BookRide extends AppCompatActivity {
 
     //noinspection SimplifiableIfStatement
     if (id == R.id.logout) {
+      revokeAccess ();
       Vars.clearDB (getApplicationContext ());
       Intent intent = new Intent (BookRide.this, LoginActivity.class);
       startActivity (intent);
@@ -343,6 +375,4 @@ public class BookRide extends AppCompatActivity {
   private void toastMessage(String message){
     Toast.makeText (this, message, Toast.LENGTH_SHORT).show ();
   }
-
-
 }

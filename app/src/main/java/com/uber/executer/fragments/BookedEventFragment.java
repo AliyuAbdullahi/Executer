@@ -91,6 +91,7 @@ public class BookedEventFragment extends Fragment {
                       eventBooked.product = product.getString ("type");
                       eventBooked.summary = destination.getString ("address");
                       eventBooked.starts = currentObject.getString ("startTime");
+                      eventBooked.eventSummary = currentObject.getString ("summary");
                       eventBookedArrayList.add (eventBooked);
                     }
 
@@ -106,6 +107,7 @@ public class BookedEventFragment extends Fragment {
                         eventDetails.putExtra ("reminder", eventBookedArrayList.get (position).reminder);
                         eventDetails.putExtra ("type", eventBookedArrayList.get (position).product);
                         eventDetails.putExtra ("id", eventBookedArrayList.get (position).ids);
+                          eventDetails.putExtra ("summary", eventBookedArrayList.get (position).eventSummary);
                         startActivity (eventDetails);
                         }catch (Exception e){
                           e.printStackTrace ();
@@ -148,7 +150,6 @@ public class BookedEventFragment extends Fragment {
                                   public void onErrorResponse (VolleyError error) {
                                     Toast.makeText (getActivity (), "Please check you internet connection",
                                             Toast.LENGTH_SHORT).show ();
-
                                   }
                                 });
 
@@ -161,7 +162,6 @@ public class BookedEventFragment extends Fragment {
                               } else {
                                 Toast.makeText (getActivity (), "Please confirm by checking the checkbox", Toast.LENGTH_SHORT).show ();
                               }
-
                             }
                           });
 
@@ -174,22 +174,13 @@ public class BookedEventFragment extends Fragment {
                           });
                           dialog.show ();
 
-
                         }catch (Exception e){
                           e.printStackTrace ();
                         }
                         return true;
                       }
                     });
-                    // bookedEventList.setAdapter (new ArrayAdapter<String> (getActivity (), R.layout.booked_event_listview_adapter, R.id.event_summary, bookedEventss));
 
-//                  GsonBuilder gsonBuilder = new GsonBuilder();
-//                  Gson gson = gsonBuilder.create();
-//
-//                  bookedEvents = gson.fromJson (String.valueOf (resultValues), BookedEventData[].class);
-//                  for(BookedEventData eventData: bookedEvents){
-//                    Log.e ("start", eventData.startTime);
-//                  }
                   } catch (JSONException e) {
                     e.printStackTrace ();
                   }
@@ -208,7 +199,6 @@ public class BookedEventFragment extends Fragment {
     }
     return view;
   }
-
 
   public void setUp (View view) {
 
@@ -235,7 +225,9 @@ public class BookedEventFragment extends Fragment {
     public String destination;
     public String product;
     public String type;
+    public String eventSummary;
   }
+
   public class MyNewAdapter extends BaseAdapter{
     ArrayList<EventBooked> eventBookeds;
     Context context;
@@ -270,7 +262,7 @@ public class BookedEventFragment extends Fragment {
       } else {
         view = convertView;
       }
-      ((TextView) view.findViewById(R.id.summary)).setText(eventBooked.summary);
+      ((TextView) view.findViewById(R.id.summary)).setText(eventBooked.eventSummary);
       try {
         ((TextView) view.findViewById(R.id.start)).setText(Vars.dateToRelativeString(eventBooked.starts));
       }
